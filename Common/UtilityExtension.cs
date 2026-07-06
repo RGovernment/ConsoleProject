@@ -57,7 +57,7 @@ public static class UtilityExtension
 
     public static string StrLengExtend(this StringBuilder sb, int range, string data, bool isLeft = false)
     {
-        int byteCount = GameSettingManager.Instance.Euckr.GetByteCount(data);
+        int byteCount = GameManager.Instance.Euckr.GetByteCount(data);
 
         if (byteCount < range)
         {
@@ -75,7 +75,7 @@ public static class UtilityExtension
                 if (data.Length < i) continue;
 
                 string ck = data[..i];
-                if (GameSettingManager.Instance.Euckr.GetByteCount(ck) <= range)
+                if (GameManager.Instance.Euckr.GetByteCount(ck) <= range)
                 {
                     sb.Clear();
                     sb.Append(ck);

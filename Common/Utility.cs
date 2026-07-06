@@ -25,7 +25,7 @@ public static class Utility
         for (int i = 2; i <= (int)sqrt; i++)
         {
 
-            if (limit % i == 0) { return false; }
+            if (limit % i == 0) return false; 
         }
         return true;
     }

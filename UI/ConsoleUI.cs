@@ -750,8 +750,21 @@ public static class ConsoleUI
         WriteLine($"|  │     ┌┬┬┐     │    │ ┌┐ │       │     ││       ││  |");
         WriteLine($"|  │     ││││     │    │ ││ │       │     ││       ││  |");
     }
+    public static void WriteTrainingHall()
+    {
+        WriteLine($"|     ┌┐  │    │            ┌─────┐       ┌─────┐      |");
+        WriteLine($"|     ││  ├┬───┘            │     │       │     │      |");
+        WriteLine($"|   ─┬┴┴┬─┼┼  ┼┼  ┌┐        └─────┘       └─────┘      |");
+        WriteLine($"|    │  │ ││  ││ ─┼┼─          │             │         |");
+        WriteLine($"|  │ │  │ ││  ││  ││ │     ────┼────     ────┼────     |");
+        WriteLine($"|  ├─┤  ├─┤├──┤├──┤├─┤         │             │         |");
+        WriteLine($"|  │ │  │ ││  ││  ││ │         │             │         |");
+        WriteLine($"|  │ \\  / ││ /  \\    │         │             │         |");
+        WriteLine($"|  │  \\/  ││ \\  /    │         │             │         |");
+    }
 
-    public static void WriteInTrainingHall(int type)
+    // 완성 후 생각
+    /*public static void WriteInTrainingHall(int type)
     {
         if (type == 1)
         {
@@ -780,7 +793,7 @@ public static class ConsoleUI
 
         }
 
-    }
+    }*/
 
 
     private static void WriteTableRow(IReadOnlyList<string> cells, int[] widths, ConsoleColor color)

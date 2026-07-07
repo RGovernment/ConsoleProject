@@ -25,17 +25,11 @@ public class GameManager
     /// 프로그램 전체에서 하나만 사용하는 GameManager 인스턴스입니다.
     /// </summary>
     public static GameManager Instance { get; } = new GameManager();
-    public SceneKey NowScene { get; set; }
-    public Encoding Euckr { get; }
-    public int NowWallType { get; set; }
-    public int NowMoney { get; set; }
+
     private GameManager()
     {
         Context = new GameContext(this);
         RegisterScenes();
-        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-        Euckr = Encoding.GetEncoding("ks_c_5601-1987");
-        NowMoney = 500;
     }
 
     public GameContext Context { get; }
@@ -97,7 +91,8 @@ public class GameManager
             Context.AddLog($"등록되지 않은 화면입니다: {key}");
             return;
         }
-        Instance.NowScene = key;
+
+        Instance.Context.NowScene = key;
         Console.WriteLine(key);
         _currentScene?.Exit(Context);
         _currentScene = nextScene;

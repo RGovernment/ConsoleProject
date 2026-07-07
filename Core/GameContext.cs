@@ -1,3 +1,6 @@
+using ConsoleGameFramework.Models;
+using System.Text;
+using static ConsoleGameFramework.Common.Constants;
 namespace ConsoleGameFramework.Core;
 
 /// <summary>
@@ -10,11 +13,14 @@ namespace ConsoleGameFramework.Core;
 /// </summary>
 public class GameContext
 {
-    private const int MaxLogCount = 8;
+    private const int MaxLogCount = 10;
 
     public GameContext(GameManager game)
     {
         Game = game;
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        Euckr = Encoding.GetEncoding("ks_c_5601-1987");
+        NowMoney = INITIAL_AMOUNT;
     }
 
     /// <summary>
@@ -55,4 +61,18 @@ public class GameContext
             Logs.RemoveAt(0);
         }
     }
+
+    // 현재 위치 중인 Scene 이름
+    public SceneKey NowScene { get; set; }
+    // 인코딩 참조
+    public Encoding Euckr { get; }
+
+    // Loading 이동중 벽 타입 순서 변수
+    public int NowWallType { get; set; }
+
+    // 플레이어가 현재 소지중인 돈 / 플레이어와 분리 (저장 데이터 대체)
+    public int NowMoney { get; set; }
+
+    //현재 플레이중인 플레이어 객체
+    public Player player { get; set; }
 }

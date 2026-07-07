@@ -11,17 +11,19 @@ namespace ConsoleGameFramework.Scenes;
 
 public class ShopScene : SceneBase
 {
+    //일단 총 5~6개에 목록 2~3개만 (새로고침 없음)
     private static readonly List<MenuOption> Menu = new()
     {
-        new MenuOption(0, "종료", "프로그램을 종료합니다.")
+        new MenuOption(1, "아이템 구매", "도움이 아이템을 구매합니다."),
+        new MenuOption(0, "마을로", "마을로 돌아갑니다.")
     };
 
     public override void Enter(GameContext context)
     {
-        context.AddLog("로딩 화면에 들어왔습니다.");
+        context.AddLog("상점에 들어왔습니다.");
     }
 
-    public override SceneKey Key => SceneKey.Loading;
+    public override SceneKey Key => SceneKey.Shop;
 
     public override void Render(GameContext context)
     {

@@ -9,11 +9,12 @@ namespace ConsoleGameFramework.Scenes
 {
     public class HomeTownScene : SceneBase
     {
-        private static readonly List<MenuOption> Menu = new List<MenuOption>
+        private static readonly List<MenuOption> Menu = new()
         {
-            new MenuOption(1, "훈련장", "훈련장으로 이동합니다."),
-            new MenuOption(2, "상점", "상점으로 이동합니다."),
-            new MenuOption(0, "종료", "프로그램을 종료합니다.")
+            new (1, "훈련장", "훈련장으로 이동합니다."),
+            new (2, "상점", "상점으로 이동합니다."),
+            new (3, "출발", "던전 내부로 이동합니다."),
+            new (0, "메인화면", "메인화면으로 이동합니다.")
         };
 
         public override void Enter(GameContext context)
@@ -29,7 +30,7 @@ namespace ConsoleGameFramework.Scenes
             ConsoleUI.WriteTitle("홈타운", "던전의 시작");
 
             ConsoleUI.WriteTable(
-            headers: ["소지금", GameManager.Instance.NowMoney.ToString()],
+            headers: ["소지금", GameManager.Instance.Context.NowMoney.ToString()],
             rows: new List<List<string>>()
             );
 
@@ -50,27 +51,16 @@ namespace ConsoleGameFramework.Scenes
             switch (choice)
             {
                 case 1:
-                    int count = 1;
-                    while(count <  3)
-                    {
-
-                        ConsoleUI.Clear();
-                        ConsoleUI.WriteTitle("홈타운", "던전의 시작");
-
-                        ConsoleUI.WriteTable(
-                        headers: ["소지금", GameManager.Instance.NowMoney.ToString()],
-                        rows: new List<List<string>>()
-                        );
-
-                        ConsoleUI.WriteInTrainingHall(count);
-                        await Task.Delay(Random.Shared.Next(300, 500));
-                        count++;
-                    }
-                    
-
+                    GoTo(context, SceneKey.TrainingHall);
+                    break;
+                case 2:
+                    GoTo(context, SceneKey.Shop);
+                    break;
+                case 3:
+                    GoTo(context, SceneKey.Loading);
                     break;
                 case 0:
-                    context.Game.RequestQuit();
+                    GoTo(context, SceneKey.Title);
                     break;
             }
         }

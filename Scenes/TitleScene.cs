@@ -1,4 +1,7 @@
 using ConsoleGameFramework.Core;
+using ConsoleGameFramework.Data;
+using ConsoleGameFramework.Models;
+using ConsoleGameFramework.Skills;
 using ConsoleGameFramework.UI;
 
 namespace ConsoleGameFramework.Scenes;
@@ -48,6 +51,15 @@ public class TitleScene : SceneBase
 
             case 1:
                 string name = ConsoleUI.ReadString("이름을 입력하세요");
+                Player player = new(name, 200,
+                [
+                    new Skill(SkillData.PlayerSkills[0], 0),
+                    new Skill(SkillData.PlayerSkills[1], 0),
+                    new Skill(SkillData.PlayerSkills[2], 0),
+
+                ]);
+
+                PlayerManager.Instance.playerStatus = player;
                 GoTo(context, SceneKey.HomeTown);
                 break;
 

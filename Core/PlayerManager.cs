@@ -17,10 +17,4 @@ public class PlayerManager
     {
 
     }
-
-    public PlayerManager(Player player)
-    {
-        playerStatus = player;
-    }
-
 }

@@ -25,7 +25,10 @@ public static class SkillData
         [ATK_POINT] = 5,
         [COIN_POINT] = 6,
         [DESCRIPTION] = "적에게 화상이 있을 경우 피해량 30% 증가",
-        [SKILL_EFFECT] = new List<string> { "damageUp/burn/damage,30" }
+        [SKILL_EFFECT] = 
+        new List<string[]> { 
+            new [] { "burn", "damage", "30" } 
+        }
     };
     public static Dictionary<string, object> DoubleThrust = new()
     {
@@ -37,7 +40,11 @@ public static class SkillData
         [ATK_POINT] = 6,
         [COIN_POINT] = 3,
         [DESCRIPTION] = "1. 적중 시 적에게 화상 1 부여\n2. 적에게 화상이 있을 경우 코인 위력 1 증가",
-        [SKILL_EFFECT] = new List<string> { "givenHit/burn,1", "haveBurn/cointPoint,1" }
+        [SKILL_EFFECT] = 
+        new List<string[]> { 
+            new [] { "givenHit", "burn", "1" },
+            new [] {"haveBurn", "cointPoint", "1" }
+        }
     };
     public static Dictionary<string, object> SilverPiercing = new ()
     {
@@ -49,7 +56,11 @@ public static class SkillData
         [ATK_POINT] = 7,
         [COIN_POINT] = 2,
         [DESCRIPTION] = "1. 적에게 화상이 있을 경우 코인 위력 2 증가\n2. 사용 시 다음 턴에 사용하는 스킬의 공격력 3 증가",
-        [SKILL_EFFECT] = new List<string> { "haveBurn/cointPoint,2", "use/nextAtkPoint,3" }
+        [SKILL_EFFECT] = 
+        new List<string[]> {
+            new[] { "haveBurn", "cointPoint", "2" },
+            new[] { "use", "nextAtkPoint", "3" }
+        }
     };
 
     public static Dictionary<string, object> EnemyAttack1 = new()
@@ -62,7 +73,7 @@ public static class SkillData
         [ATK_POINT] = 3,
         [COIN_POINT] = 4,
         [DESCRIPTION] = "얍얍얍!!",
-        [SKILL_EFFECT] = new List<string> {}
+        [SKILL_EFFECT] = new List<string[]> {}
     };
 
     public static Dictionary<string, object> EnemyAttack2 = new()
@@ -75,7 +86,7 @@ public static class SkillData
         [ATK_POINT] = 4,
         [COIN_POINT] = 3,
         [DESCRIPTION] = "얍얍얍!!!",
-        [SKILL_EFFECT] = new List<string> { }
+        [SKILL_EFFECT] = new List<string[]> { }
     };
 
     public static Dictionary<string, object> EnemyAttack3 = new()
@@ -88,7 +99,7 @@ public static class SkillData
         [ATK_POINT] = 3,
         [COIN_POINT] = 4,
         [DESCRIPTION] = "얍얍얍!!!",
-        [SKILL_EFFECT] = new List<string> { }
+        [SKILL_EFFECT] = new List<string[]> { }
     };
 
     public static List<Dictionary<string, object>> PlayerSkills = new()
@@ -103,18 +114,4 @@ public static class SkillData
         EnemyAttack2,
         EnemyAttack3
     };
-    /*    public Dictionary<string, object> SkillData { get; set; }
-        public string? Id => SkillData.TryGetValue("id", out object? value) ? value.ToString() : "";
-        public string? Name => SkillData.TryGetValue("name", out object? value) ? value.ToString() : "";
-        public int Grade { get; set; }
-
-        // GradeEffect는 스플릿으로 사용할 것(JObject 대체)
-        // 구조 "그레이드 단계,그레이드 이펙트,그레이드 이펙트에 대한 수치,효과에 대한 Description 텍스트"
-        public string? GradeEffect => SkillData.TryGetValue("gradeEffect", out object? value) ? value.ToString() : "";
-        public int Coin => SkillData.TryGetValue("coin", out object? value) ? Convert.ToInt32(value) : 0;
-        public int AttackPoint => SkillData.TryGetValue("atkPoint", out object? value) ? Convert.ToInt32(value) : 0;
-        public int CoinPoint => SkillData.TryGetValue("coinPoint", out object? value) ? Convert.ToInt32(value) : 0;
-        public string? Description => SkillData.TryGetValue("description", out object? value) ? value.ToString() : "";
-        public List<string> SkillEffect { get; set; }
-        public List<EffectStatus> EffectList { get; set; }*/
 }

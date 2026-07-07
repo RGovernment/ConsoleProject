@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static ConsoleGameFramework.Common.Constants;
 
 namespace ConsoleGameFramework.Skills;
 
@@ -30,14 +31,15 @@ public class Skill
     public int AttackPoint => SkillData.TryGetValue("atkPoint", out object? value) ? Convert.ToInt32(value) : 0;
     public int CoinPoint => SkillData.TryGetValue("coinPoint", out object? value) ? Convert.ToInt32(value) : 0;
     public string? Description => SkillData.TryGetValue("description", out object? value) ? value.ToString() : "";
-    public List<string> SkillEffect { get; set; }
-    public List<EffectStatus> EffectList { get; set; }
+    public List<string[]> SkillEffect { get; private set; }
 
-    public Skill(Dictionary<string, object> skillData, int grade, List<string> skillEffect, List<EffectStatus> effect)
+    public Skill(Dictionary<string, object> skillData, int grade)
     {
         SkillData = skillData;
         Grade = grade;
-        SkillEffect = new(skillEffect);
-        EffectList = new(effect);
+        if (skillData[SKILL_EFFECT] is List<string[]> data) SkillEffect = data;
+        else SkillEffect = new();
+        
+        
     }
 }

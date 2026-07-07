@@ -55,8 +55,7 @@ public class TitleScene : SceneBase
                 [
                     new Skill(SkillData.PlayerSkills[0], 0),
                     new Skill(SkillData.PlayerSkills[1], 0),
-                    new Skill(SkillData.PlayerSkills[2], 0),
-
+                    new Skill(SkillData.PlayerSkills[2], 0)
                 ]);
 
                 PlayerManager.Instance.playerStatus = player;

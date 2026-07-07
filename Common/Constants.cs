@@ -11,6 +11,11 @@ public static class Constants
     public const int MAX_Sanity = 45;
     public const int INITIAL_AMOUNT = 600;
 
+    //통상 호출
+    public const string HP = "hp";
+    public const string MAX_HP = "maxHp";
+    public const string NOW_HP = "nowHp";
+
     //스킬 호출 string
     public const string ATK = "atk";
     public const string ATK_POINT = "atkPoint";

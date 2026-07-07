@@ -65,6 +65,9 @@ public class GameContext
     // 현재 위치 중인 Scene 이름
     public SceneKey NowScene { get; set; }
     // 인코딩 참조
+    public int NowRound { get; set; } = 0;
+    public int NowStage { get; set; } = 0;
+    public bool IsBoss { get; set; }
     public Encoding Euckr { get; }
 
     // Loading 이동중 벽 타입 순서 변수
@@ -72,7 +75,4 @@ public class GameContext
 
     // 플레이어가 현재 소지중인 돈 / 플레이어와 분리 (저장 데이터 대체)
     public int NowMoney { get; set; }
-
-    //현재 플레이중인 플레이어 객체
-    public Player player { get; set; }
 }

@@ -616,11 +616,13 @@ public static class ConsoleUI
         string sixth = "",
         string seventh = "",
         string eighth = "",
-        string ninth = ""
+        string ninth = "",
+        bool clearActive = true
         )
     {
+        
         type = Math.Clamp(type, 1, 5);
-        Clear();
+        if(clearActive) Clear();
         
         StringBuilder sb = new();
         sb.Append(first);
@@ -731,7 +733,7 @@ public static class ConsoleUI
                 break;
             default:break;
         }
-        Present();
+        if (clearActive) Present();
     }
 
 

@@ -35,11 +35,11 @@ public static class SkillData
         [ID] = "doubleThrust",
         [NAME] = "연속 찌르기",
         [MAX_GRADE] = "2",
-        [GRADE_EFFECT] = new string[2] { "1,givenHit/burn,1,적중 시 화상 1 부여", "2,coin/coinPoint,1,코인 위력 1 증가" },
+        [GRADE_EFFECT] = new string[2] { "1,atk/atkPoint,1,공격력 2 증가", "2,coin/coinPoint,1,코인 위력 1 증가" },
         [COIN] = 2,
         [ATK_POINT] = 6,
         [COIN_POINT] = 3,
-        [DESCRIPTION] = "1. 적중 시 적에게 화상 1 부여\n2. 적에게 화상이 있을 경우 코인 위력 1 증가",
+        [DESCRIPTION] = "적중 시 적에게 화상 1 부여/적에게 화상이 있을 경우 코인 위력 1 증가",
         [SKILL_EFFECT] = 
         new List<string[]> { 
             new [] { "givenHit", "burn", "1" },
@@ -55,7 +55,7 @@ public static class SkillData
         [COIN] = 4,
         [ATK_POINT] = 7,
         [COIN_POINT] = 2,
-        [DESCRIPTION] = "1. 적에게 화상이 있을 경우 코인 위력 2 증가\n2. 사용 시 다음 턴에 사용하는 스킬의 공격력 3 증가",
+        [DESCRIPTION] = "적에게 화상이 있을 경우 코인 위력 2 증가/사용 시 다음 턴에 사용하는 스킬의 공격력 3 증가",
         [SKILL_EFFECT] = 
         new List<string[]> {
             new[] { "haveBurn", "cointPoint", "2" },
@@ -98,7 +98,7 @@ public static class SkillData
         [COIN] = 3,
         [ATK_POINT] = 3,
         [COIN_POINT] = 4,
-        [DESCRIPTION] = "얍얍얍!!!",
+        [DESCRIPTION] = "얍얍얍얍!!!!",
         [SKILL_EFFECT] = new List<string[]> { }
     };
 

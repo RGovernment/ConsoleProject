@@ -1,6 +1,8 @@
 ﻿
 
 using ConsoleGameFramework.Core;
+using ConsoleGameFramework.Data;
+using ConsoleGameFramework.Skills;
 using ConsoleGameFramework.UI;
 using System.Diagnostics.Metrics;
 using static ConsoleGameFramework.Common.Enums;
@@ -19,7 +21,7 @@ namespace ConsoleGameFramework.Scenes
 
         public override void Enter(GameContext context)
         {
-            context.AddLog("던전 마을입니다. 던전 내부로 출발하기 전, 훈련소와 상점에서 정비를 마쳐주세요.");
+            context.AddLog("던전 마을입니다.");
         }
 
         public override SceneKey Key => SceneKey.HomeTown;

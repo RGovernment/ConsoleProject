@@ -11,8 +11,9 @@ namespace ConsoleGameFramework.Skills;
 public class Skill
 {
     public Dictionary<string,object> SkillData { get; set; }
-    public string? Id => SkillData.TryGetValue("id", out object? value) ? value.ToString() : "";
-    public string? Name => SkillData.TryGetValue("name", out object? value) ? value.ToString() : "";
+    public string? Id => SkillData.TryGetValue(ID, out object? value) ? value.ToString() : "";
+    public string? Name => SkillData.TryGetValue(NAME, out object? value) ? value.ToString() : "";
+    public int MaxGrade => SkillData.TryGetValue(MAX_GRADE, out object? value) ? Convert.ToInt32(value) : 0;
     public int Grade { get; set; }
 
     // GradeEffect는 스플릿으로 사용할 것(JObject 대체)
@@ -20,17 +21,17 @@ public class Skill
     public string[]? GradeEffect
     {
         get {
-            if (SkillData.TryGetValue("gradeEffect", out object? value) && value is string[] data)
+            if (SkillData.TryGetValue(GRADE_EFFECT, out object? value) && value is string[] data)
             {
                 return data;
             }else 
                 return [];
         }
     }
-    public int Coin => SkillData.TryGetValue("coin", out object? value) ? Convert.ToInt32(value) :0;
-    public int AttackPoint => SkillData.TryGetValue("atkPoint", out object? value) ? Convert.ToInt32(value) : 0;
-    public int CoinPoint => SkillData.TryGetValue("coinPoint", out object? value) ? Convert.ToInt32(value) : 0;
-    public string? Description => SkillData.TryGetValue("description", out object? value) ? value.ToString() : "";
+    public int Coin => SkillData.TryGetValue(COIN, out object? value) ? Convert.ToInt32(value) :0;
+    public int AttackPoint => SkillData.TryGetValue(ATK_POINT, out object? value) ? Convert.ToInt32(value) : 0;
+    public int CoinPoint => SkillData.TryGetValue(COIN_POINT, out object? value) ? Convert.ToInt32(value) : 0;
+    public string? Description => SkillData.TryGetValue(DESCRIPTION, out object? value) ? value.ToString() : "";
     public List<string[]> SkillEffect { get; private set; }
 
     public Skill(Dictionary<string, object> skillData, int grade)
@@ -39,7 +40,5 @@ public class Skill
         Grade = grade;
         if (skillData[SKILL_EFFECT] is List<string[]> data) SkillEffect = data;
         else SkillEffect = new();
-        
-        
     }
 }

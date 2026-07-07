@@ -4,6 +4,7 @@ using static ConsoleGameFramework.Common.Enums;
 using static ConsoleGameFramework.Common.Constants;
 using static ConsoleGameFramework.Common.UtilityExtension;
 using static ConsoleGameFramework.Common.Utility;
+using ConsoleGameFramework.Core;
 namespace ConsoleGameFramework.UI;
 
 /// <summary>
@@ -606,7 +607,7 @@ public static class ConsoleUI
         WriteColored(border, ConsoleColor.DarkGray);
         WriteLine();
     }
-    public static void WriteLoad(GameStatus status,int type,
+    public static void WriteLoad(int type,
         string first = "", 
         string second = "", 
         string third = "", 

@@ -38,7 +38,7 @@ namespace ConsoleGameFramework.Scenes
                 }
                 else type++;
                 sb.Append('.');
-                ConsoleUI.WriteLoad(GameStatus.Load, type, fifth:sb.ToString());
+                ConsoleUI.WriteLoad(type, fifth:sb.ToString());
                 GameManager.Instance.Context.NowWallType = type;
                 await Task.Delay(Random.Shared.Next(100, 150));
                 count++;

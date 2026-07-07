@@ -109,11 +109,8 @@ namespace ConsoleGameFramework.Scenes
                     }
                     break;
                 case 0:
-                    if(position != 0) 
-                    {
-                        position = 0;
-                    }
-                    context.Game.RequestQuit();
+                    if(position != 0) position = 0;
+                    else GoTo(context, SceneKey.HomeTown);
                     break;
             }
         }

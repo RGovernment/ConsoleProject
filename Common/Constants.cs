@@ -9,4 +9,5 @@ public static class Constants
     public static int[] Y_DIRECTION = { 0, 0, -1, 1 };
     public static int MIN_SANITY = -45;
     public static int MAX_Sanity = 45;
+    public static int INITIAL_AMOUNT = 500;
 }

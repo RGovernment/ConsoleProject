@@ -12,9 +12,8 @@ public class TitleScene : SceneBase
 {
     private static readonly List<MenuOption> Menu = new List<MenuOption>
     {
-        new MenuOption(3, "로딩 화면으로 이동", "로딩 화면 움직임 테스트."),
-        new MenuOption(2, "전투 화면으로 이동", "플레이어와 적의 전투가 시작됩니다."),
-        new MenuOption(1, "샘플 화면으로 이동", "ConsoleUI의 다른 기능들을 보여주는 화면으로 이동합니다."),
+        new MenuOption(1, "게임  시작", "게임을 시작합니다."),
+        //new MenuOption(1, "샘플 화면으로 이동", "ConsoleUI의 다른 기능들을 보여주는 화면으로 이동합니다."),
         new MenuOption(0, "종료", "프로그램을 종료합니다.")
     };
 
@@ -44,13 +43,12 @@ public class TitleScene : SceneBase
                 GoTo(context, SceneKey.Loading);
                 break;
             case 2:
-                string name = ConsoleUI.ReadString("이름을 입력하세요");
-                BattleManager.Instance.StartBattleInit(name);
                 GoTo(context, SceneKey.Battle);
                 break;
 
             case 1:
-                GoTo(context, SceneKey.Sample);
+                string name = ConsoleUI.ReadString("이름을 입력하세요");
+                GoTo(context, SceneKey.HomeTown);
                 break;
 
             case 0:

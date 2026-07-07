@@ -4,6 +4,7 @@ using static ConsoleGameFramework.Common.Enums;
 using static ConsoleGameFramework.Common.Constants;
 using static ConsoleGameFramework.Common.UtilityExtension;
 using static ConsoleGameFramework.Common.Utility;
+using ConsoleGameFramework.Core;
 namespace ConsoleGameFramework.UI;
 
 /// <summary>
@@ -606,7 +607,7 @@ public static class ConsoleUI
         WriteColored(border, ConsoleColor.DarkGray);
         WriteLine();
     }
-    public static void WriteLoad(GameStatus status,int type,
+    public static void WriteLoad(int type,
         string first = "", 
         string second = "", 
         string third = "", 
@@ -731,15 +732,71 @@ public static class ConsoleUI
             default:break;
         }
         Present();
-
-
-        
-
-        
-        
-
-        
     }
+
+
+    public static void WriteTown()
+    {
+        // 메인 길이
+        //WriteLine($"|                                                      |");
+
+        //메인 높이
+        WriteLine($"|  ┌──────────────┐                                    |");
+        WriteLine($"|  │  ┌────────┐  │                                    |");
+        WriteLine($"|  │  │ 훈련장 │  │       ___ ___                      |");
+        WriteLine($"|  │  └────────┘  │      /\\       \\                    |");
+        WriteLine($"|  │              │     /  \\       \\     ┌───────────┐ |");
+        WriteLine($"|  ├──────────────┤    /상점\\       \\    │ 던전 입구 │ |");
+        WriteLine($"|  │              │    ├────┴ - - - ┤    └───────────┘ |");
+        WriteLine($"|  │     ┌┬┬┐     │    │ ┌┐ │       │     ││       ││  |");
+        WriteLine($"|  │     ││││     │    │ ││ │       │     ││       ││  |");
+    }
+    public static void WriteTrainingHall()
+    {
+        WriteLine($"|     ┌┐  │    │            ┌─────┐       ┌─────┐      |");
+        WriteLine($"|     ││  ├┬───┘            │     │       │     │      |");
+        WriteLine($"|   ─┬┴┴┬─┼┼  ┼┼  ┌┐        └─────┘       └─────┘      |");
+        WriteLine($"|    │  │ ││  ││ ─┼┼─          │             │         |");
+        WriteLine($"|  │ │  │ ││  ││  ││ │     ────┼────     ────┼────     |");
+        WriteLine($"|  ├─┤  ├─┤├──┤├──┤├─┤         │             │         |");
+        WriteLine($"|  │ │  │ ││  ││  ││ │         │             │         |");
+        WriteLine($"|  │ \\  / ││ /  \\    │         │             │         |");
+        WriteLine($"|  │  \\/  ││ \\  /    │         │             │         |");
+    }
+
+    // 완성 후 생각
+    /*public static void WriteInTrainingHall(int type)
+    {
+        if (type == 1)
+        {
+            WriteLine($"|  │                   │          /   \\            \\   |");
+            WriteLine($"|  ├───────────────────┤         /     \\            \\  |");
+            WriteLine($"|  │                   │        / 상 점 \\            \\ |");
+            WriteLine($"|  │                   │       /         \\           │\\|");
+            WriteLine($"|  │                   │        ├─────────┴ --- --- -┤   |");
+            WriteLine($"|  │      ┌─┬─┬─┐      │        │         │          │ |");
+            WriteLine($"|  │      │ │ │ │      │        │ ┌───┐   │          │ |");
+            WriteLine($"|  │      │ │ │ │      │        │ │   │   │          │ |");
+            WriteLine($"|  │      │ │ │ │      │        │ │   │   │          │ |");
+
+        }
+        else
+        {
+        WriteLine($"|  │       ┌────┬────┬────┐       │        │           |");
+        WriteLine($"|  │                              │        ├────────── |");
+        WriteLine($"|  │       ├────┼────┼────┤       │        │           |");
+        WriteLine($"|  │       │    │    │    │       │        │    ┌─────┬|");
+        WriteLine($"|  │       │    │    │    │       │        │    │     │|");
+        WriteLine($"|  │       │    │    │    │       │        │    │     │|");
+        WriteLine($"|  │       │    │    │    │       │        │    │     │|");
+        WriteLine($"|  │       │    │    │    │       │        │    │     │|");
+        WriteLine($"|  │       │    │    │    │       │        │    │     │|");
+
+        }
+
+    }*/
+
+
     private static void WriteTableRow(IReadOnlyList<string> cells, int[] widths, ConsoleColor color)
     {
         WriteColored("|", ConsoleColor.DarkGray, null, false);

@@ -10,4 +10,15 @@ public static class Constants
     public static int MIN_SANITY = -45;
     public static int MAX_Sanity = 45;
     public static int INITIAL_AMOUNT = 500;
+
+    //스킬 호출 string
+    public static string ID = "id";
+    public static string NAME = "name";
+    public static string MAX_GRADE = "maxGrade";
+    public static string GRADE_EFFECT = "gradeEffect";
+    public static string COIN = "coin";
+    public static string ATK_POINT = "atkPoint";
+    public static string COIN_POINT = "coinPoint";
+    public static string DESCRIPTION = "description";
+    public static string SKILL_EFFECT = "skillEffect";
 }

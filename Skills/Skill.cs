@@ -16,7 +16,16 @@ public class Skill
 
     // GradeEffect는 스플릿으로 사용할 것(JObject 대체)
     // 구조 "그레이드 단계,그레이드 이펙트,그레이드 이펙트에 대한 수치,효과에 대한 Description 텍스트"
-    public string? GradeEffect => SkillData.TryGetValue("gradeEffect", out object? value) ? value.ToString() : "";
+    public string[]? GradeEffect
+    {
+        get {
+            if (SkillData.TryGetValue("gradeEffect", out object? value) && value is string[] data)
+            {
+                return data;
+            }else 
+                return [];
+        }
+    }
     public int Coin => SkillData.TryGetValue("coin", out object? value) ? Convert.ToInt32(value) :0;
     public int AttackPoint => SkillData.TryGetValue("atkPoint", out object? value) ? Convert.ToInt32(value) : 0;
     public int CoinPoint => SkillData.TryGetValue("coinPoint", out object? value) ? Convert.ToInt32(value) : 0;

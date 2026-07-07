@@ -11,11 +11,16 @@ public class PlayerManager
 {
     public static PlayerManager Instance { get; } = new PlayerManager();
 
-    public Player playerStatus;
+    public Player playerStatus { get; set; }
 
-    public PlayerManager()
+    private PlayerManager()
     {
 
+    }
+
+    public PlayerManager(Player player)
+    {
+        playerStatus = player;
     }
 
 }

@@ -28,8 +28,15 @@ namespace ConsoleGameFramework.Scenes
         {
             new (1, "1번 스킬 강화", "1번 스킬을 강화합니다."),
             new (2, "2번 스킬 강화", "2번 스킬을 강화합니다."),
-            new (3, "3번 스킬 강화", "3번 스킬 강화합니다."),
-            new (0, "마을로", "마을로 돌아갑니다.")
+            new (3, "3번 스킬 강화", "3번 스킬을 강화합니다."),
+            new (0, "목록으로", "훈련장 목록으로 돌아갑니다.")
+        };
+        private static readonly List<MenuOption> Menu3 = new()
+        {
+            new (1, "1번 스킬 교체", "1번 스킬을 교체합니다."),
+            new (2, "2번 스킬 교체", "2번 스킬을 교체합니다."),
+            new (3, "3번 스킬 교체", "3번 스킬을 교체합니다."),
+            new (0, "목록으로", "훈련장 목록으로 돌아갑니다.")
         };
         private Dictionary<int, int> SkillUpgradeCost = new()
         {
@@ -52,8 +59,10 @@ namespace ConsoleGameFramework.Scenes
             ConsoleUI.WriteTitle("훈련장", "힘이 모이는 곳");
 
             ConsoleUI.WriteTable(
-            headers: ["소지금", GameManager.Instance.Context.NowMoney.ToString()],
-            rows: new List<List<string>>()
+            headers: ["이름", "로벤"],
+            rows: new List<List<string>>() { 
+                new(){ "소지금", GameManager.Instance.Context.NowMoney.ToString() }
+            }
             );
 
             if (position == 0)
@@ -62,7 +71,8 @@ namespace ConsoleGameFramework.Scenes
                 ConsoleUI.WriteBox(
                     [
                     " 스킬 강화 : 캐릭터가 가진 스킬을 강화할 수 있다.",
-                " 스킬 교체 : 캐릭터가 가진 스킬을 교체할 수 있다. ※\n교체시 이전 스킬은 초기화된다.※",
+                " 스킬 교체 : 캐릭터가 가진 스킬을 교체할 수 있다.",
+                "           ※ 교체시 이전 스킬은 초기화된다.※",
                 "    마을로 : 마을로 돌아간다."
                     ], "마을 설명", ConsoleColor.DarkCyan);
                 ConsoleUI.WriteMenu(Menu, "선택 메뉴");
@@ -179,16 +189,31 @@ namespace ConsoleGameFramework.Scenes
 
         public override void HandleInput(GameContext context)
         {
-            int choice = ConsoleUI.ReadMenuChoice(Menu);
-            if (position == 1)
+            int choice = position == 0 ? 
+                ConsoleUI.ReadMenuChoice(Menu) : 
+                position == 1 ? ConsoleUI.ReadMenuChoice(Menu2) 
+                : ConsoleUI.ReadMenuChoice(Menu3);
+            if (choice > 0 && position == 1 && upgradeAble.Length >= choice)
             {
-                string text = ConsoleUI.ReadString("정말 강화하시겠습니까? [예/아니오]", "아니오");
+                if (!upgradeAble[choice - 1])
+                {
+                    context.AddLog("이 스킬은 더 이상 강화할 수 없습니다.");
+                    return;
+                }
+
+                string text = ConsoleUI.ReadString("정말 강화하시겠습니까? [예]");
 
                 if (text != null && text == "예")
                 {
                     if (SkillUpgradeCost.TryGetValue(choice, out int val) &&
-                    val * (nowSkillData[choice].Grade + 1) >= GameManager.Instance.Context.NowMoney)
-                        nowSkillData[choice].Grade++;
+                        nowSkillData.Count < choice)
+                    {
+                        context.AddLog("입력이 잘못되었습니다.");
+                        return;
+                    }
+
+                    if(val * (nowSkillData[choice - 1].Grade + 1) <= GameManager.Instance.Context.NowMoney)
+                        nowSkillData[choice - 1].Grade++;
                     else
                     {
                         context.AddLog("금액이 부족합니다.");
@@ -201,7 +226,12 @@ namespace ConsoleGameFramework.Scenes
                     context.AddLog("취소되었습니다.");
                     return;
                 }
-                
+
+                int cost = SkillUpgradeCost[choice];
+
+                Console.WriteLine(SkillManager.UpgradeSkill(cost, nowSkillData[choice - 1]));
+
+                return;
             }
 
             // 스킬 강화시 조건없는 강화의 경우 SkillEffect에 추가하지 않고 영구적으로 수치가 상승
@@ -211,39 +241,35 @@ namespace ConsoleGameFramework.Scenes
             switch (choice)
             {
                 case 1:
-                    if (position == 0) position = 1;
+                    if (position == 0)
+                    {
+                        context.AddLog("스킬 강화 시작");
+                        position = 1;
+                    }
                     else if (position == 1)
                     {
-                        int cost = SkillUpgradeCost[choice];
 
-
-
-                        GameManager.Instance.Context.NowMoney -= cost * nowSkillData[choice].Grade;
                     }
                     break;
                 case 2:
                     if (position == 0) position = 2;
                     else if (position == 1)
                     {
-                        int cost = SkillUpgradeCost[choice];
 
-
-
-                        GameManager.Instance.Context.NowMoney -= cost * nowSkillData[choice].Grade;
                     }
                     break;
                 case 3:
                     if (position == 1)
                     {
-                        int cost = SkillUpgradeCost[choice];
 
-
-
-                        GameManager.Instance.Context.NowMoney -= cost * nowSkillData[choice].Grade;
                     }
                     break;
                 case 0:
-                    if(position != 0) position = 0;
+                    if (position != 0)
+                    {
+                        position = 0;
+                        return;
+                    }
                     else GoTo(context, SceneKey.HomeTown);
                     break;
             }

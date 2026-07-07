@@ -35,7 +35,7 @@ public static class SkillData
         [ID] = "doubleThrust",
         [NAME] = "연속 찌르기",
         [MAX_GRADE] = "2",
-        [GRADE_EFFECT] = new string[2] { "1,atk/atkPoint,1,공격력 2 증가", "2,coin/coinPoint,1,코인 위력 1 증가" },
+        [GRADE_EFFECT] = new string[2] { "1,atk/atkPoint,2,공격력 2 증가", "2,coin/coinPoint,1,코인 위력 1 증가" },
         [COIN] = 2,
         [ATK_POINT] = 6,
         [COIN_POINT] = 3,

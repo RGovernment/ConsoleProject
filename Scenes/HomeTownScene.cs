@@ -31,9 +31,13 @@ namespace ConsoleGameFramework.Scenes
             ConsoleUI.Clear();
             ConsoleUI.WriteTitle("홈타운", "던전의 시작");
 
+            ConsoleUI.Clear();
+            ConsoleUI.WriteTitle("훈련장", "힘이 모이는 곳");
+
             ConsoleUI.WriteTable(
-            headers: ["소지금", GameManager.Instance.Context.NowMoney.ToString()],
-            rows: new List<List<string>>()
+            headers: ["이름", "로벤"],
+            rows: new List<List<string>>() {
+                new(){ "소지금", GameManager.Instance.Context.NowMoney.ToString()  }                }
             );
 
             ConsoleUI.WriteTown();

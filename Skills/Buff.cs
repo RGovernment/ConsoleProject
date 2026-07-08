@@ -8,7 +8,8 @@ namespace ConsoleGameFramework.Skills;
 
 public class Buff : EffectStatus
 {
-    public Buff(string name, string id,string desc ,List<string> Effect) : base(name, id, desc, Effect)
+    public Buff(string name, string id,int coeffi,string desc,int duration) 
+        : base(name, id, coeffi, desc, duration)
     {
 
     }

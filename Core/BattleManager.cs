@@ -4,17 +4,19 @@ using ConsoleGameFramework.Models;
 using ConsoleGameFramework.Skills;
 using ConsoleGameFramework.UI;
 using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml.Linq;
 using static ConsoleGameFramework.Common.Constants;
 using static ConsoleGameFramework.Common.Utility;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace ConsoleGameFramework.Core;
 
 
 public class BattleManager
 {
-    // 윈도우 콘솔 제어를 위한 Windows API 가져오기
+/*    // 윈도우 콘솔 제어를 위한 Windows API 가져오기
     [DllImport("kernel32.dll", SetLastError = true)]
     static extern IntPtr GetStdHandle(int nStdHandle);
 
@@ -24,14 +26,14 @@ public class BattleManager
     [DllImport("kernel32.dll", SetLastError = true)]
     static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
 
-    const int STD_INPUT_HANDLE = -10;
     const uint ENABLE_ECHO_INPUT = 0x0004;    // 사용자가 입력한 키를 화면에 그리는 모드
-    const uint ENABLE_LINE_INPUT = 0x0002;    // 엔터키를 누를 때까지 입력받는 모드
+    const uint ENABLE_LINE_INPUT = 0x0002;    // 엔터키를 누를 때까지 입력받는 모드*/
 
     // 플레이어
     public Player Player { get; private set; }
 	// 적
 	public List<Enemy> Enemy { get; private set; }
+
 
 	// 플레이어와 적을 생성하고, 초기화하는 함수.
 	public void StartBattleInit(int round, Dictionary<string, object> roundData)
@@ -48,7 +50,7 @@ public class BattleManager
             string name = 
 				enemyData.TryGetValue(NAME, out object? nameVal) &&
                 nameVal is string nameData ? nameData : "기본수";
-			int maxHp = enemyData.TryGetValue(HP, out object? maxHpVal) &&
+			int maxHp = enemyData.TryGetValue(MAX_HP, out object? maxHpVal) &&
                 maxHpVal is int hpData ? hpData : 80;
 			
 			Enemy.Add(new(id, name, maxHp,
@@ -59,10 +61,36 @@ public class BattleManager
                 ] 
 				));
 		}
-	}
+    }
+    // next
+    public void NextBattleInit(int round,Player player, Dictionary<string, object> roundData)
+    {
+        Player = player;
+        Enemy = new();
 
+        foreach (var data in roundData)
+        {
+            Dictionary<string, object> enemyData = (Dictionary<string, object>)data.Value;
+            string id =
+                enemyData.TryGetValue(ID, out object? idVal) &&
+                idVal is string idData ? idData : "defaultId";
+            string name =
+                enemyData.TryGetValue(NAME, out object? nameVal) &&
+                nameVal is string nameData ? nameData : "기본수";
+            int maxHp = enemyData.TryGetValue(MAX_HP, out object? maxHpVal) &&
+                maxHpVal is int hpData ? hpData : 80;
 
-	public enum BattleOutcome
+            Enemy.Add(new(id, name, maxHp,
+                [
+                    new Skill(SkillData.EnemySkills[0], 0),
+                    new Skill(SkillData.EnemySkills[1], 0),
+                    new Skill(SkillData.EnemySkills[2], 0)
+                ]
+                ));
+        }
+    }
+
+    public enum BattleOutcome
 	{
 		Continuing,
 		Victory,
@@ -89,7 +117,7 @@ public class BattleManager
 	/// <param name="firstId">대결할 스킬1 보유자의 ID</param>
 	/// <param name="secondId">대결할 스킬2 보유자의 ID</param>
     /// <returns>계산 완료된 스킬</returns>
-    public async Task<(Character winner, Skill skill)> SkillClash(
+    public async Task<(Character winner, Character loser, Skill skill)> SkillClash(
 		Skill first, Skill second, 
 		Character firstChara, Character secondChara)
 	{
@@ -105,7 +133,7 @@ public class BattleManager
         char rightCoin = '◑';
         char forwardCoin = '●';
 
-		Dictionary<string, int> firstCoinAtkVal = CoinAndAtkPointCalc(first, secondChara);
+        Dictionary<string, int> firstCoinAtkVal = CoinAndAtkPointCalc(first, secondChara);
         Dictionary<string, int> secondCoinAtkVal = CoinAndAtkPointCalc(second, firstChara);
 
         int firstAtk = first.AttackPoint + firstCoinAtkVal[ATK];
@@ -120,19 +148,25 @@ public class BattleManager
 		else vsLeng = second.Name != null ? second.Name.Length : 2;
 
 		StringBuilder vsLengSb = new();
-		vsLengSb.StrLengExtend(Math.Max(2, vsLeng), "vs");
-
+		string vsString= vsLengSb.StrLengExtend(Math.Max(2, vsLeng), "vs");
+        string[] lastData = new string[5];
         //이후 구간, 계산 및 출력 반복
         // 출력된 10줄 시작점으로 이동해 다시 콘솔 출력(코인 던지기 반복 어색하지 않게)
         int currentLineCursor = Console.CursorTop - 10;
+        int totalCrashCount = 0;
+        Console.SetCursorPosition(0, currentLineCursor);
+        for (int i = 0; i < 10; i++)
+        {
+            Console.Write(new string(' ', Console.WindowWidth));
+        }
 
-		//합 전체가 끝날때까지 루프
-		while (true)
+        //합 전체가 끝날때까지 루프
+        while (true)
 		{
 			if (first.Coin == 0 || second.Coin == 0) break;
 			int firstCoinPointTotal = 0;
 			int secondCoinPointTotal = 0;
-
+            
 			sb.Clear();
 			sb2.Clear();
 			int count = 0;
@@ -148,7 +182,6 @@ public class BattleManager
 				int turnMax = 20;
 
 				// 공격력 or 코인 위력에 추가 조건이 있는지 검사
-
 				if (first.Coin > count) sb.Append(leftCoin);
 				if (second.Coin > count) sb2.Append(leftCoin);
 
@@ -174,7 +207,7 @@ public class BattleManager
 					[
 						$"{first.Name} [ 공격력 : {firstAtk + firstCoinPointTotal} ]",
 									sb.ToString(),
-									vsLengSb.ToString(),
+                                    vsString.ToString(),
 									$"{second.Name} [ 공격력 : {secondAtk + secondCoinPointTotal} ]",
 									sb2.ToString()
 					],
@@ -209,11 +242,19 @@ public class BattleManager
 
 				Console.SetCursorPosition(0, currentLineCursor);
 				ConsoleUI.ClearRange(10);
-				ConsoleUI.WriteBox(
+                lastData = [
+                    $"{first.Name} [ 공격력 : {firstAtk + firstCoinPointTotal} ]",
+                    sb.ToString(),
+                    vsString.ToString(),
+                    $"{second.Name} [ 공격력 : {secondAtk + secondCoinPointTotal} ]",
+                    sb2.ToString()
+                ];
+
+                ConsoleUI.WriteBox(
 				[
 					$"{first.Name} [ 공격력 : {firstAtk + firstCoinPointTotal} ]",
 					sb.ToString(),
-					vsLengSb.ToString(),
+                    vsString.ToString(),
 					$"{second.Name} [ 공격력 : {secondAtk + secondCoinPointTotal} ]",
 					sb2.ToString()
 				],
@@ -224,76 +265,264 @@ public class BattleManager
 
 				await Task.Delay(100);
 
-				if (turnCount != 0 || count != 0)
-				{
-					Console.SetCursorPosition(0, currentLineCursor);
-					for (int i = 0; i < 10; i++)
-					{
-						Console.Write(new string(' ',
-							Console.WindowWidth));
-					}
-				}
-
 				count++;
-			}
+
+                if (turnCount != 0 || count != 0 && count >= first.Coin && count >= second.Coin)
+                {
+                    Console.SetCursorPosition(0, currentLineCursor);
+                    for (int i = 0; i < 10; i++)
+                    {
+                        Console.Write(new string(' ',
+                            Console.WindowWidth));
+                    }
+                }
+            }
 
 			// 합 승리 계산 후 재 루프
 			if (firstAtk + firstCoinPointTotal > secondAtk + secondCoinPointTotal)
 				second.Coin--;
-			
-
 			else if (firstAtk + firstCoinPointTotal < secondAtk + secondCoinPointTotal)
 				first.Coin--;
 
-            await Task.Delay(500);
+            totalCrashCount++;
         }
-
         ///콘솔 입력 방지 해제
         /*        while (Console.KeyAvailable) Console.ReadKey(intercept: true);
                 SetConsoleMode(hInput, originalMode);*/
         /// 
-
+        int bonus = (totalCrashCount >= 2) ? (totalCrashCount - 1) * 2 : 0;
         //결과 반환
+        //ConsoleUI.Present();
+        if (first.Coin == 0)
+        {
+            Character winner = secondChara;
+            winner.GainSanity(10 + bonus);
 
-        return (first.Coin == 0 ? secondChara : firstChara, first.Coin == 0 ? second : first);
+            return (winner, firstChara, second);
+        }
+        else 
+        {
+            Character winner = firstChara;
+            winner.GainSanity(10 + bonus);
+
+            return (winner, secondChara, first);
+        }
 	}
 
-	public Dictionary<string, int> CoinAndAtkPointCalc(Skill skill, Character target)
+    /// <summary>
+    /// 공격 스킬 대미지 판정 계산 (동전 있음)
+    /// </summary>
+    /// <param name="skill"></param>
+    /// <param name="user"></param>
+    /// <param name="target"></param>
+    /// <returns></returns>
+	public async Task<int> SkillDamage(Skill skill,Character user, Character target)
+	{
+        // 기본 정보
+        StringBuilder sb = new();
+        char leftCoin = '◐';
+        char reverseCoin = '○';
+        char rightCoin = '◑';
+        char forwardCoin = '●';
+        //
+
+        // skill 데이터 로드, 추가 조건 검사(위력 / 코인값 추가되는지)
+        Dictionary<string, int> coinAtkVal = CoinAndAtkPointCalc(skill, target);
+
+        int atk = skill.AttackPoint + coinAtkVal[ATK];
+        int coinPoint = skill.CoinPoint + coinAtkVal[COIN_POINT];
+        int coinPointTotal = 0;
+        // 
+
+        sb.Clear();
+        int count = 0;
+
+        // 출력된 10줄 시작점으로 이동해 다시 콘솔 출력(코인 던지기 반복 어색하지 않게)
+        int currentLineCursor = Console.CursorTop - 7;
+
+        // 루프
+        while (true)
+        {
+            if (count >= skill.Coin) break;
+            bool firstNowToss = CoinToss(user.Sanity);
+            int coinFlip = 0;
+            int turnCount = 0;
+            int turnMax = 20;
+
+            if (skill.Coin > count) sb.Append(leftCoin);
+
+            while (turnCount < turnMax)
+            {
+                char nowCoin = coinFlip == 0 ? leftCoin :
+                               coinFlip == 1 ? reverseCoin :
+                               coinFlip == 2 ? rightCoin :
+                                               forwardCoin;
+
+                if (coinFlip < 3) coinFlip++;
+                else coinFlip = 0;
+
+                if (skill.Coin > count && sb.Length > 0) sb[^1] = nowCoin;
+                Console.SetCursorPosition(0, currentLineCursor);
+                if (count != 0 || turnCount != 0)
+                {
+                    ConsoleUI.ClearRange(7);
+                }
+
+                ConsoleUI.WriteBox(
+                [
+                    $"{skill.Name} [ 공격력 : {atk + coinPointTotal} ]",
+                                    sb.ToString()
+                ],
+                "대미지", ConsoleColor.DarkYellow
+                );
+                ConsoleUI.Present();
+                turnCount++;
+                await Task.Delay(9);
+            }
+
+            if (skill.Coin > count)
+            {
+                if (firstNowToss)
+                {
+                    sb[^1] = forwardCoin;
+
+                    coinPointTotal += coinPoint;
+                }
+                else sb[^1] = reverseCoin;
+            }
+
+            Console.SetCursorPosition(0, currentLineCursor);
+            ConsoleUI.ClearRange(7);
+            ConsoleUI.WriteBox(
+            [
+                $"{skill.Name} [ 공격력 : {atk + coinPointTotal} ]",
+                    sb.ToString()
+            ],
+            "대미지", ConsoleColor.DarkYellow
+            );
+            ConsoleUI.Present();
+            //count가 첫번째 스킬 코인보다도 높고, 두번째 스킬 코인 보다도 높을때 종료
+
+            await Task.Delay(50);
+            count++;
+        }
+
+        int damageIncrease = 100 + CoinAndAtkPointCalc(skill, target)[DAMAGE];
+        int totalDamage = 0;
+        if (damageIncrease == 0)
+        {
+            totalDamage = atk + coinPointTotal;
+        }
+        else
+            totalDamage = (int)Math.Round((atk + coinPointTotal) * damageIncrease / 100f);
+
+        target.TakeDebuff(GIVEN_HIT, skill.SkillEffect);
+		target.TakeDamage(totalDamage);
+
+		return totalDamage;
+    }
+
+    /// <summary>
+    /// 공격 스킬 대미지 판정 계산 (동전 없음)
+    /// </summary>
+    /// <param name="skill"></param>
+    /// <param name="user"></param>
+    /// <param name="target"></param>
+    /// <returns></returns>
+    public async Task<int> SkillDamageInstant(Skill skill, Character user, Character target)
+    {
+        // skill 데이터 로드, 추가 조건 검사(위력 / 코인값 추가되는지)
+        Dictionary<string, int> coinAtkVal = CoinAndAtkPointCalc(skill, target);
+
+        int atk = skill.AttackPoint + coinAtkVal[ATK];
+        int coinPoint = skill.CoinPoint + coinAtkVal[COIN_POINT];
+        int coinPointTotal = 0;
+        // 
+
+        int count = 0;
+
+
+
+        // 루프
+        while (true)
+        {
+            if (count >= skill.Coin) break;
+            bool firstNowToss = CoinToss(user.Sanity);
+            int turnCount = 0;
+
+            if(firstNowToss) coinPointTotal += coinPoint;
+ 
+            count++;
+        }
+        int damageIncrease = CoinAndAtkPointCalc(skill, target)[DAMAGE];
+        int totalDamage = 0;
+        if (damageIncrease == 0)
+        {
+            totalDamage = atk + coinPointTotal;
+        }
+        else
+            totalDamage = (int)Math.Round((atk + coinPointTotal) * damageIncrease / 100f);
+
+
+        target.TakeDebuff(GIVEN_HIT, skill.SkillEffect);
+        target.TakeDamage(totalDamage);
+
+        return totalDamage;
+    }
+
+    public void CharaListClean()
+	{
+        Enemy.RemoveAll(x => !x.IsAlive);
+    }
+    public void GameOver()
+    {
+        Console.WriteLine("게임 오버");
+        GameManager.Instance.ChangeScene(SceneKey.Title);
+    }
+
+    public Dictionary<string, int> CoinAndAtkPointCalc(Skill skill, Character target)
 	{
 		int atk = 0;
 		int coinPoint = 0;
 		int coin = 0;
+        int damage = 0;
 
 		foreach(var data in skill.SkillEffect)
 		{
 			string condition = data[0];
 			string type = data[1];
-            if (int.TryParse(data[2], out int value)) value = 0;
-            
-            switch (condition)
-			{
-
-				case HAVE_BURN: 
-					if (type == ATK) atk += value;
-					if (type == COIN_POINT) coinPoint += value;
-                    
-					break; 
-
+            if (int.TryParse(data[2], out int value))
+            {
+                switch (condition)
+                {
+                    case HAVE_BURN:
+                        if (target.DebuffList.Count > 0 &&
+                            target.DebuffList.Any(x => x.Id == BURN))
+                        {
+                            if (type == ATK) atk += value;
+                            if (type == COIN_POINT) coinPoint += value;
+                            if (type == DAMAGE) damage += value;
+                        }
+                        break;
+                }
             }
-
-			//data[0]
-
         }
 
         Dictionary<string, int> result = new()
         {
             [ATK] = atk,
             [COIN] = coin,
-            [COIN_POINT] = coinPoint
+            [COIN_POINT] = coinPoint,
+            [DAMAGE] = damage
         };
 
 
         return result;
 	}
+
+    public bool PlayCk()
+    {
+        return Player.IsAlive && Enemy.Any(x => x.IsAlive);
+    }
 
 }

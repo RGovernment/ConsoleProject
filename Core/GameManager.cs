@@ -58,7 +58,7 @@ public class GameManager
     /// 프로그램의 메인 루프입니다.
     /// 현재 Scene을 그리고(Render), 화면에 반영(Present), 입력을 처리(HandleInput)하는 과정을 반복합니다.
     /// </summary>
-    public void Run()
+    public async void Run()
     {
         ChangeScene(SceneKey.Title);
 
@@ -75,8 +75,7 @@ public class GameManager
         ConsoleUI.WriteTitle("프로그램 종료", "수고하셨습니다.");
         ConsoleUI.WriteBox(new[]
         {
-            "C# 콘솔 게임 프레임워크가 종료되었습니다.",
-            "Core, UI, Scenes 구조를 기준으로 기능을 확장할 수 있습니다."
+            "C# 콘솔 게임 프레임워크가 종료되었습니다."
         }, "Good Bye", ConsoleColor.DarkCyan);
         ConsoleUI.Present();
     }

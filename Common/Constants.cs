@@ -21,6 +21,7 @@ public static class Constants
     public const string ATK_POINT = "atkPoint";
     public const string COIN = "coin";
     public const string COIN_POINT = "coinPoint";
+    public const string DAMAGE = "damage";
     public const string DESCRIPTION = "description";
     public const string GIVEN_HIT = "givenHit";
     public const string GRADE_EFFECT = "gradeEffect";

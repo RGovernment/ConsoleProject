@@ -17,14 +17,13 @@ public class RoundData
         {
             [ID] = "20000",
             [NAME] = "잡몹1",
-            [MAX_HP] = 100
-        }
-
+            [MAX_HP] = 80
+        },
         ["dummy2"] = new Dictionary<string, object>()
         {
             [ID] = "20001",
             [NAME] = "잡몹2",
-            [MAX_HP] = 80
+            [MAX_HP] = 60
         }
     };
 

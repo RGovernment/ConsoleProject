@@ -1,5 +1,6 @@
 using ConsoleGameFramework.Common;
 using System.Text;
+using ConsoleGameFramework.Models;
 using static ConsoleGameFramework.Common.Enums;
 using static ConsoleGameFramework.Common.Constants;
 using static ConsoleGameFramework.Common.UtilityExtension;
@@ -566,7 +567,8 @@ public static class ConsoleUI
         WriteColored($"{current}/{max}", ConsoleColor.White);
     }
 
-    public static void WriteStatusBar(string label, int sanity, int current, int max, int barWidth = 24, ConsoleColor fillColor = ConsoleColor.Green)
+    public static void WriteStatusBar(Character chara, string label,
+        int sanity, int current, int max, int barWidth = 24, ConsoleColor fillColor = ConsoleColor.Green)
     {
         max = Math.Max(1, max);
         current = Math.Clamp(current, 0, max);
@@ -581,6 +583,35 @@ public static class ConsoleUI
         WriteColored(new string('░', empty), ConsoleColor.DarkGray, null, false);
         Write("] ");
         WriteColored($"체력 : {current}/{max} | 정신력 : {sanity}", ConsoleColor.White);
+        StringBuilder sb = new();
+
+        if (chara.BuffList.Count > 0)
+        {
+            sb.Append("버프 : ");
+
+            chara.BuffList.ForEach(x => {
+                    sb.Append($"{x.Name}");
+                sb.Append($" {x.Coefficient}");
+                
+                if (x.Duration == -1) sb.Append($" - 소멸시까지 지속 \n");
+                else sb.Append($" - {x.Duration} 턴 지속 \n");
+            });
+        }
+
+        if(chara.DebuffList.Count > 0)
+        {
+            sb.Append("디버프 : ");
+
+            chara.DebuffList.ForEach(x => {
+                sb.Append($"{x.Name}");
+                sb.Append($" {x.Coefficient}");
+
+                if (x.Duration == -1) sb.Append($" - 소멸시까지 지속 \n");
+                else sb.Append($" - {x.Duration} 턴 지속 \n");
+            });
+        }
+        
+        WriteLine($"{sb}");
     }
 
     /// <summary>

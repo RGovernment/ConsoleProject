@@ -62,6 +62,14 @@ public class Skill
     // 해당 스킬의 효과
     public List<string[]> SkillEffect { get; private set; }
 
+    public Skill(Skill skill)
+    {
+        SkillData = new(skill.SkillData);
+        Grade = skill.Grade;
+        if (skill.SkillData[SKILL_EFFECT] is List<string[]> data) SkillEffect = data;
+        else SkillEffect = new();
+    }
+
     public Skill(Dictionary<string, object> skillData, int grade)
     {
         SkillData = skillData;

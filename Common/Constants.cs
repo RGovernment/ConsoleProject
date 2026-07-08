@@ -11,6 +11,11 @@ public static class Constants
     public const int MAX_Sanity = 45;
     public const int INITIAL_AMOUNT = 600;
 
+    //통상 호출
+    public const string HP = "hp";
+    public const string MAX_HP = "maxHp";
+    public const string NOW_HP = "nowHp";
+
     //스킬 호출 string
     public const string ATK = "atk";
     public const string ATK_POINT = "atkPoint";
@@ -24,6 +29,9 @@ public static class Constants
     public const string NAME = "name";
     public const string SKILL_EFFECT = "skillEffect";
     public const string TAKEN_HIT = "takenHit";
+
+    // 조건 Id
+    public const string HAVE_BURN = "haveBurn";
 
     // 버프/디버프 관련 호출
     public const string BURN = "burn";

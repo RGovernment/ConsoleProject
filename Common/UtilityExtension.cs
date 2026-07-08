@@ -14,16 +14,13 @@ public static class UtilityExtension
     /// </summary>
     /// <typeparam name="T">모든 변수 타입</typeparam>
     /// <param name="values"></param>
-    /// <returns>List</returns>
-    public static IList<T> Shuffle<T>(this IList<T> values)
+    public static void Shuffle<T>(this IList<T> values)
     {
         for (int i = values.Count - 1; i > 0; i--)
         {
             int j = Random.Shared.Next(0, i + 1);
             (values[i], values[j]) = (values[j], values[i]);
         }
-
-        return values;
     }
 
     public static void MatrixFill<T>(this T[,] data, T fill)

@@ -29,7 +29,7 @@ namespace ConsoleGameFramework.Scenes
             int count = 0;
             StringBuilder sb = new();
             sb.Append("로딩중");
-            while (count < 100) {
+            while (count < 20) {
                 
                 if (type > 4) { 
                     type = 1; 
@@ -43,19 +43,12 @@ namespace ConsoleGameFramework.Scenes
                 await Task.Delay(Random.Shared.Next(100, 150));
                 count++;
             }
-
+            GoTo(context, context.LodingTarget);
         }
 
         public override void HandleInput(GameContext context)
         {
-            int choice = ConsoleUI.ReadMenuChoice(Menu);
-
-            switch (choice)
-            {
-                case 0:
-                    context.Game.RequestQuit();
-                    break;
-            }
+             
         }
 
     }

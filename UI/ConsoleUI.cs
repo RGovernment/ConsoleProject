@@ -550,6 +550,23 @@ public static class ConsoleUI
         WriteColored($"{current}/{max}", ConsoleColor.White);
     }
 
+    public static void WriteStatusBar(string label, int sanity, int current, int max, int barWidth = 24, ConsoleColor fillColor = ConsoleColor.Green)
+    {
+        max = Math.Max(1, max);
+        current = Math.Clamp(current, 0, max);
+
+        double ratio = current / (double)max;
+        int filled = (int)Math.Round(ratio * barWidth);
+        int empty = barWidth - filled;
+
+        Write(Fit(label, 10));
+        Write(" [");
+        WriteColored(new string('█', filled), fillColor, null, false);
+        WriteColored(new string('░', empty), ConsoleColor.DarkGray, null, false);
+        Write("] ");
+        WriteColored($"체력 : {current}/{max} | 정신력 : {sanity}", ConsoleColor.White);
+    }
+
     /// <summary>
     /// key-value 형태의 정보를 출력합니다.
     /// 상태창에서 능력치 목록을 보여줄 때 사용합니다.
@@ -616,11 +633,13 @@ public static class ConsoleUI
         string sixth = "",
         string seventh = "",
         string eighth = "",
-        string ninth = ""
+        string ninth = "",
+        bool clearActive = true
         )
     {
+        
         type = Math.Clamp(type, 1, 5);
-        Clear();
+        if(clearActive) Clear();
         
         StringBuilder sb = new();
         sb.Append(first);
@@ -731,7 +750,7 @@ public static class ConsoleUI
                 break;
             default:break;
         }
-        Present();
+        if (clearActive) Present();
     }
 
 

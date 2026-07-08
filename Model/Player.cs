@@ -11,8 +11,8 @@ public class Player : Character
 
     }
 
-    public Player(string name, int maxHp, List<Skill> skillList) : 
-		base(name, maxHp, skillList)
+    public Player(string id, string name, int maxHp, List<Skill> skillList) : 
+		base(id, name, maxHp, skillList)
 	{
 
 	}

@@ -29,28 +29,45 @@ public class BattleScene : SceneBase
             RoundData.StageRoundList[context.NowStage][context.NowRound]);
     }
 
-    public override void Render(GameContext context)
+    public async override void Render(GameContext context)
     {
         //●○◐◑
         ConsoleUI.Clear();
         ConsoleUI.WriteTitle("전투 개시", $"라운드 : {context.NowRound + 1}");
         ConsoleUI.WriteStatusBar(battleManager.Player.Name, 
+            battleManager.Player.Sanity,
             battleManager.Player.Hp, 
-            battleManager.Player.MaxHp);
+            max:battleManager.Player.MaxHp,
+            fillColor: 
+            battleManager.Player.Hp / (float)battleManager.Player.MaxHp < 0.5f ? 
+            ConsoleColor.Yellow : battleManager.Player.Hp / (float)battleManager.Player.MaxHp < 0.1f ? 
+            ConsoleColor.DarkRed : ConsoleColor.Green);
         sb.Clear();
         sb2.Clear();
 
         battleManager.Enemy.ForEach(x =>
         {
-            ConsoleUI.WriteStatusBar(x.Name, x.Hp, x.MaxHp);
+            ConsoleUI.WriteStatusBar(x.Name, x.Sanity, x.Hp, max:x.MaxHp,
+                fillColor:
+                x.Hp / 100.0f < 0.5f ?
+                ConsoleColor.Yellow : x.Hp / (float)x.MaxHp < 0.1f ?
+                ConsoleColor.DarkRed : ConsoleColor.Green
+            );
         });
 
 
         ConsoleUI.WriteLoad(context.NowWallType,
-            fifth: "교전중 입니다.", 
+            fifth: "교전중...", 
             clearActive:false);
         ConsoleUI.WriteMenu(Menu, "행동 메뉴");
         ConsoleUI.WriteLog(context.Logs);
+
+        await battleManager.SkillClash(
+            battleManager.Player.SkillList[2],
+            battleManager.Enemy[0].SkillList[2],
+            battleManager.Player,
+            battleManager.Enemy[0]
+            );
     }
 
     public override void HandleInput(GameContext context)

@@ -2,6 +2,7 @@
 using ConsoleGameFramework.Skills;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 
 namespace ConsoleGameFramework.Models;
@@ -9,6 +10,7 @@ namespace ConsoleGameFramework.Models;
 
 public class Character
 {
+    public string Id { get; private set; }
     public string Name { get; private set; }
     public int MaxHp { get; private set; }
     public int Hp { get; private set; }
@@ -32,9 +34,11 @@ public class Character
         BuffList = new();
         DebuffList = new();
         SkillQueue = new();
+        NextQueue = new();
     }
-    public Character(string name, int maxHp, List<Skill> list, int sanity = 0)
+    public Character(string id, string name, int maxHp, List<Skill> list, int sanity = 0)
     {
+        Id = id;
         Name = name;
         MaxHp = maxHp;
         Hp = maxHp;
@@ -44,6 +48,7 @@ public class Character
         BuffList = new();
         DebuffList = new();
         SkillQueue = new();
+        NextQueue = new();
     }
 
     public void TakeDamage(int damage)
@@ -55,7 +60,7 @@ public class Character
     /// skill을 섞고 재배치한 뒤 큐(뽑는 큐, 대기 큐 2개)에 넣고 순서대로 스킬 출력
     /// </summary>
     /// <returns></returns>
-    public Skill? GetSkillQueue()
+    public Skill GetSkillQueue()
     {
         if (SkillList.Count < 3) return null;
 

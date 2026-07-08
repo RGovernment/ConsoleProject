@@ -68,6 +68,7 @@ public class GameContext
     public int NowRound { get; set; } = 0;
     public int NowStage { get; set; } = 0;
     public bool IsBoss { get; set; }
+    public SceneKey LodingTarget { get; set; }
     public Encoding Euckr { get; }
 
     // Loading 이동중 벽 타입 순서 변수

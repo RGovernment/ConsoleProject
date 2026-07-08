@@ -63,7 +63,9 @@ namespace ConsoleGameFramework.Scenes
                     GoTo(context, SceneKey.Shop);
                     break;
                 case 3:
-                    GoTo(context, SceneKey.Loading);
+                    //context.LodingTarget = SceneKey.Battle;
+                    //GoTo(context, SceneKey.Loading);
+                    GoTo(context, SceneKey.Battle);
                     break;
                 case 0:
                     GoTo(context, SceneKey.Title);

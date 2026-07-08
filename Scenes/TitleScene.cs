@@ -40,18 +40,9 @@ public class TitleScene : SceneBase
         int choice = ConsoleUI.ReadMenuChoice(Menu);
         switch (choice)
         {
-            case 3:
-                
-                
-                GoTo(context, SceneKey.Loading);
-                break;
-            case 2:
-                GoTo(context, SceneKey.Battle);
-                break;
-
             case 1:
                 string name = ConsoleUI.ReadString("이름을 입력하세요");
-                Player player = new(name, 200,
+                Player player = new("player", name, 200,
                 [
                     new Skill(SkillData.PlayerSkills[0], 0),
                     new Skill(SkillData.PlayerSkills[1], 0),

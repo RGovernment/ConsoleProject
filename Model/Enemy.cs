@@ -5,7 +5,7 @@ namespace ConsoleGameFramework.Models;
 
 public class Enemy : Character
 {
-	public Enemy(string name, int maxHp, List<Skill> SkillList) : base(name, maxHp, SkillList)
+	public Enemy(string id, string name, int maxHp, List<Skill> SkillList) : base(id, name, maxHp, SkillList)
 	{
 	}
 }

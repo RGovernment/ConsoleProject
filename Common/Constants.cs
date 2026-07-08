@@ -30,6 +30,9 @@ public static class Constants
     public const string SKILL_EFFECT = "skillEffect";
     public const string TAKEN_HIT = "takenHit";
 
+    // 조건 Id
+    public const string HAVE_BURN = "haveBurn";
+
     // 버프/디버프 관련 호출
     public const string BURN = "burn";
 }

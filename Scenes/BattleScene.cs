@@ -12,38 +12,37 @@ public class BattleScene : SceneBase
 {
     private static readonly List<MenuOption> Menu = new List<MenuOption>
     {
-        new MenuOption(1, "공격","몬스터를 공격합니다."),
         new MenuOption(0, "도주")
     };
+    Skill[] useAbleSkill = new Skill[2];
+    /*[SerializeField]*/
+    private BattleManager battleManager;
 
-    /*[SerializeField]*/ private BattleManager battleManager;
-    StringBuilder sb = new();
-    StringBuilder sb2 = new();
     public override SceneKey Key => SceneKey.Battle;
 
     public override void Enter(GameContext context)
     {
+        context.AddLog("전투를 시작합니다.");
         battleManager = new BattleManager();
 
         battleManager.StartBattleInit(context.NowRound, 
             RoundData.StageRoundList[context.NowStage][context.NowRound]);
     }
 
-    public async override void Render(GameContext context)
+    public override void Render(GameContext context)
     {
+        Player nowPlayer = battleManager.Player;
         //●○◐◑
         ConsoleUI.Clear();
         ConsoleUI.WriteTitle("전투 개시", $"라운드 : {context.NowRound + 1}");
-        ConsoleUI.WriteStatusBar(battleManager.Player.Name, 
-            battleManager.Player.Sanity,
-            battleManager.Player.Hp, 
+        ConsoleUI.WriteStatusBar(nowPlayer.Name, 
+            nowPlayer.Sanity,
+            nowPlayer.Hp, 
             max:battleManager.Player.MaxHp,
-            fillColor: 
-            battleManager.Player.Hp / (float)battleManager.Player.MaxHp < 0.5f ? 
-            ConsoleColor.Yellow : battleManager.Player.Hp / (float)battleManager.Player.MaxHp < 0.1f ? 
+            fillColor:
+            nowPlayer.Hp / (float)nowPlayer.MaxHp < 0.5f ? 
+            ConsoleColor.Yellow : nowPlayer.Hp / (float)nowPlayer.MaxHp < 0.1f ? 
             ConsoleColor.DarkRed : ConsoleColor.Green);
-        sb.Clear();
-        sb2.Clear();
 
         battleManager.Enemy.ForEach(x =>
         {
@@ -59,20 +58,31 @@ public class BattleScene : SceneBase
         ConsoleUI.WriteLoad(context.NowWallType,
             fifth: "교전중...", 
             clearActive:false);
+
+        
+
+        for (int i = useAbleSkill.Length - 1; i >= 0; i--){
+            useAbleSkill[i] = nowPlayer.GetSkillQueue();
+            Menu.Add(new MenuOption(i + 1, $"[{useAbleSkill[i].Name}] 사용하기"));
+        }
+        
+
         ConsoleUI.WriteMenu(Menu, "행동 메뉴");
         ConsoleUI.WriteLog(context.Logs);
-
-        await battleManager.SkillClash(
-            battleManager.Player.SkillList[2],
-            battleManager.Enemy[0].SkillList[2],
-            battleManager.Player,
-            battleManager.Enemy[0]
-            );
     }
 
-    public override void HandleInput(GameContext context)
+    public async override void HandleInput(GameContext context)
     {
         int choice = ConsoleUI.ReadMenuChoice(Menu);
+
+
+        await battleManager.SkillClash(
+                battleManager.Player.SkillList[choice],
+                battleManager.Enemy[0].SkillList[2],
+                battleManager.Player,
+                battleManager.Enemy[0]
+                );
+
         switch (choice)
         {
             case 1:

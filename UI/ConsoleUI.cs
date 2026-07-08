@@ -115,6 +115,22 @@ public static class ConsoleUI
     }
 
     /// <summary>
+    /// 버퍼에서 일부분을 삭제, 범위가 버퍼 크기보다 클 경우 전체 삭제
+    /// </summary>
+    /// <param name="range">삭제 범위</param>
+    public static void ClearRange(int range)
+    {
+        if (range >= _frameLines.Count)
+        {
+            _frameLines.Clear();
+            return;
+        }
+
+        int startIndex = _frameLines.Count - range;
+
+        _frameLines.RemoveRange(startIndex, range);
+    }
+    /// <summary>
     /// 버퍼에 쌓인 한 프레임을 콘솔 화면에 반영합니다.
     /// Console.Clear() 대신 커서를 맨 위로 옮긴 뒤 줄 단위로 덮어써서 깜빡임을 줄입니다.
     /// </summary>

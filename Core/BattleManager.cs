@@ -89,7 +89,7 @@ public class BattleManager
 	/// <param name="firstId">대결할 스킬1 보유자의 ID</param>
 	/// <param name="secondId">대결할 스킬2 보유자의 ID</param>
     /// <returns>계산 완료된 스킬</returns>
-    public async Task<(string winner, Skill skill)> SkillClash(
+    public async Task<(Character winner, Skill skill)> SkillClash(
 		Skill first, Skill second, 
 		Character firstChara, Character secondChara)
 	{
@@ -112,13 +112,9 @@ public class BattleManager
         int secondAtk = second.AttackPoint + secondCoinAtkVal[ATK];
         int firstCoinPoint = first.CoinPoint + firstCoinAtkVal[COIN_POINT];
         int secondCoinPoint = second.CoinPoint + secondCoinAtkVal[COIN_POINT];
-        int firstCoinPointTotal = 0;
-        int secondCoinPointTotal = 0;
+
         // 이름 배정
         int vsLeng = 0;
-		//코인 배치
-/*        for (int i = 0; i < first.Coin; i++) sb.Append(leftCoin);
-        for (int i = 0; i < second.Coin; i++) sb2.Append(leftCoin);*/
 
 		if (first.Name?.Length >= second.Name?.Length) vsLeng = first.Name.Length;
 		else vsLeng = second.Name != null ? second.Name.Length : 2;
@@ -126,124 +122,140 @@ public class BattleManager
 		StringBuilder vsLengSb = new();
 		vsLengSb.StrLengExtend(Math.Max(2, vsLeng), "vs");
 
-		//이후 구간, 계산 및 출력 반복
+        //이후 구간, 계산 및 출력 반복
+        // 출력된 10줄 시작점으로 이동해 다시 콘솔 출력(코인 던지기 반복 어색하지 않게)
+        int currentLineCursor = Console.CursorTop - 10;
 
-		ConsoleUI.WriteBox(
-			[
-			$"{first.Name} [ 공격력 : {first.AttackPoint} + ? ]",
-			"",
-            vsLengSb.ToString(),
-            $"{second.Name} [ 공격력 : {second.AttackPoint} + ? ]",
-			""
-			],
-			"합",ConsoleColor.DarkYellow
-			);
-
-        // 출력된 9줄 시작점으로 이동해 다시 콘솔 출력(코인 던지기 반복 어색하지 않게)
-        int currentLineCursor = Console.CursorTop - 9;
-        Console.SetCursorPosition(0, currentLineCursor);
-        
-        int count = 0;
-		//루프
+		//합 전체가 끝날때까지 루프
 		while (true)
 		{
-            if (count >= first.Coin && count >= second.Coin) break;
-            
+			if (first.Coin == 0 || second.Coin == 0) break;
+			int firstCoinPointTotal = 0;
+			int secondCoinPointTotal = 0;
 
-            bool firstNowToss = CoinToss(firstChara.Sanity);
-			bool secondNowToss= CoinToss(secondChara.Sanity);
-			int coinFlip = 0;
-			int turnCount = 0;
-            int turnMax = 20;
+			sb.Clear();
+			sb2.Clear();
+			int count = 0;
 
-            // 공격력 or 코인 위력에 추가 조건이 있는지 검사
-			
-            if (first.Coin > count) sb.Append(leftCoin);
-            if (second.Coin > count) sb2.Append(leftCoin);
-
-            while (turnCount < turnMax)
+			// 루프
+			while (true)
 			{
-				char nowCoin = coinFlip == 0 ? leftCoin    : 
-							   coinFlip == 1 ? reverseCoin : 
-							   coinFlip == 2 ? rightCoin   : 
-							                   forwardCoin ;
-				
-                if (coinFlip < 3) coinFlip++;
-				else coinFlip = 0;
+				if (count >= first.Coin && count >= second.Coin) break;
+				bool firstNowToss = CoinToss(firstChara.Sanity);
+				bool secondNowToss = CoinToss(secondChara.Sanity);
+				int coinFlip = 0;
+				int turnCount = 0;
+				int turnMax = 20;
 
-                if (first.Coin > count && sb.Length > 0) sb[^1] = nowCoin;
-                if (second.Coin > count && sb2.Length > 0) sb2[^1] = nowCoin;
+				// 공격력 or 코인 위력에 추가 조건이 있는지 검사
 
-                Console.SetCursorPosition(0, currentLineCursor);
+				if (first.Coin > count) sb.Append(leftCoin);
+				if (second.Coin > count) sb2.Append(leftCoin);
 
-                ConsoleUI.Clear();
-                ConsoleUI.WriteBox(
+				while (turnCount < turnMax)
+				{
+					char nowCoin = coinFlip == 0 ? leftCoin :
+								   coinFlip == 1 ? reverseCoin :
+								   coinFlip == 2 ? rightCoin :
+												   forwardCoin;
+
+					if (coinFlip < 3) coinFlip++;
+					else coinFlip = 0;
+
+					if (first.Coin > count && sb.Length > 0) sb[^1] = nowCoin;
+					if (second.Coin > count && sb2.Length > 0) sb2[^1] = nowCoin;
+					Console.SetCursorPosition(0, currentLineCursor);
+					if (count != 0 || turnCount != 0)
+					{
+						ConsoleUI.ClearRange(10);
+					}
+
+					ConsoleUI.WriteBox(
+					[
+						$"{first.Name} [ 공격력 : {firstAtk + firstCoinPointTotal} ]",
+									sb.ToString(),
+									vsLengSb.ToString(),
+									$"{second.Name} [ 공격력 : {secondAtk + secondCoinPointTotal} ]",
+									sb2.ToString()
+					],
+					"합", ConsoleColor.DarkYellow
+					);
+					ConsoleUI.Present();
+					turnCount++;
+					await Task.Delay(18);
+				}
+
+				if (first.Coin > count)
+				{
+					if (firstNowToss)
+					{
+						sb[^1] = forwardCoin;
+
+						firstCoinPointTotal += firstCoinPoint;
+					}
+					else sb[^1] = reverseCoin;
+				}
+
+				if (second.Coin > count)
+				{
+					if (secondNowToss)
+					{
+						sb2[^1] = forwardCoin;
+
+						secondCoinPointTotal += secondCoinPoint;
+					}
+					else sb2[^1] = reverseCoin;
+				}
+
+				Console.SetCursorPosition(0, currentLineCursor);
+				ConsoleUI.ClearRange(10);
+				ConsoleUI.WriteBox(
 				[
-					$"{first.Name} [ 공격력 : {first.AttackPoint + firstCoinPointTotal} ]",
-								sb.ToString(),
-								vsLengSb.ToString(),
-								$"{second.Name} [ 공격력 : {second.AttackPoint + secondCoinPointTotal} ]",
-								sb2.ToString()
+					$"{first.Name} [ 공격력 : {firstAtk + firstCoinPointTotal} ]",
+					sb.ToString(),
+					vsLengSb.ToString(),
+					$"{second.Name} [ 공격력 : {secondAtk + secondCoinPointTotal} ]",
+					sb2.ToString()
 				],
 				"합", ConsoleColor.DarkYellow
 				);
-                ConsoleUI.Present();
-                turnCount++;
-                await Task.Delay(50);
-            }
+				ConsoleUI.Present();
+				//count가 첫번째 스킬 코인보다도 높고, 두번째 스킬 코인 보다도 높을때 종료
 
-			if (first.Coin > count)
-			{
-				if (firstNowToss)
+				await Task.Delay(100);
+
+				if (turnCount != 0 || count != 0)
 				{
-					sb[^1] = forwardCoin;
-
-					firstCoinPointTotal += firstCoinPoint;
+					Console.SetCursorPosition(0, currentLineCursor);
+					for (int i = 0; i < 10; i++)
+					{
+						Console.Write(new string(' ',
+							Console.WindowWidth));
+					}
 				}
-				else sb[^1] = reverseCoin;
+
+				count++;
 			}
 
-			if (second.Coin > count)
-			{
-				if (secondNowToss)
-				{
-					sb2[^1] = forwardCoin;
+			// 합 승리 계산 후 재 루프
+			if (firstAtk + firstCoinPointTotal > secondAtk + secondCoinPointTotal)
+				second.Coin--;
+			
 
-					secondCoinPointTotal += secondCoinPoint;
-				}
-				else sb2[^1] = reverseCoin;
-			}
+			else if (firstAtk + firstCoinPointTotal < secondAtk + secondCoinPointTotal)
+				first.Coin--;
 
-            Console.SetCursorPosition(0, currentLineCursor);
-            ConsoleUI.Clear();
-            ConsoleUI.WriteBox(
-			[
-				$"{first.Name} [ 공격력 : {first.AttackPoint + firstCoinPointTotal} ]",
-				sb.ToString(),
-				vsLengSb.ToString(),
-				$"{second.Name} [ 공격력 : {second.AttackPoint + secondCoinPointTotal} ]",
-				sb2.ToString()
-			],
-			"합", ConsoleColor.DarkYellow
-			);
-            ConsoleUI.Present();
-            //count가 첫번째 스킬 코인보다도 높고, 두번째 스킬 코인 보다도 높을때 종료
+            await Task.Delay(500);
+        }
 
-            await Task.Delay(300);
-			count++;
+        ///콘솔 입력 방지 해제
+        /*        while (Console.KeyAvailable) Console.ReadKey(intercept: true);
+                SetConsoleMode(hInput, originalMode);*/
+        /// 
 
-		}
+        //결과 반환
 
-		///콘솔 입력 방지 해제
-/*        while (Console.KeyAvailable) Console.ReadKey(intercept: true);
-        SetConsoleMode(hInput, originalMode);*/
-		/// 
-
-
-		// 합 승리 계산 후 재 루프
-
-		//결과 반환
-        return ("", first);
+        return (first.Coin == 0 ? secondChara : firstChara, first.Coin == 0 ? second : first);
 	}
 
 	public Dictionary<string, int> CoinAndAtkPointCalc(Skill skill, Character target)

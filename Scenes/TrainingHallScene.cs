@@ -201,9 +201,9 @@ namespace ConsoleGameFramework.Scenes
                     return;
                 }
 
-                string text = ConsoleUI.ReadString("정말 강화하시겠습니까? [예]");
+                string text = ConsoleUI.ReadString("정말 강화하시겠습니까? [Y(y)]");
 
-                if (text != null && text == "예")
+                if (text != null && text.Equals("Y", StringComparison.CurrentCultureIgnoreCase))
                 {
                     if (SkillUpgradeCost.TryGetValue(choice, out int val) &&
                         nowSkillData.Count < choice)
@@ -229,8 +229,8 @@ namespace ConsoleGameFramework.Scenes
 
                 int cost = SkillUpgradeCost[choice];
 
-                Console.WriteLine(SkillManager.UpgradeSkill(cost, nowSkillData[choice - 1]));
-
+                SkillManager.UpgradeSkill(cost, nowSkillData[choice - 1]);
+                context.AddLog($"{cost}골드를 소모하여 [{nowSkillData[choice - 1].Name}] 스킬 업그레이드");
                 return;
             }
 

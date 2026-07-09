@@ -10,7 +10,7 @@ using System.Text;
 using System.Xml.Linq;
 using static ConsoleGameFramework.Common.Constants;
 using static ConsoleGameFramework.Common.Utility;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using static ConsoleGameFramework.Data.BossData;
 namespace ConsoleGameFramework.Core;
 
 
@@ -35,6 +35,8 @@ public class BattleManager
 	public List<Enemy> Enemy { get; private set; }
 
     public Action TurnActive;
+
+    public Action<Player,List<Enemy>> TurnEnd;
     // 플레이어와 적을 생성하고, 초기화하는 함수.
     public void StartBattleInit(int round, Dictionary<string, object> roundData)
 	{
@@ -66,17 +68,20 @@ public class BattleManager
         TurnActive -= Player.TakeDotDamage;
         TurnActive += Player.CommonBuffAndDebuffDurationDiscount;
         TurnActive += Player.TakeDotDamage;
+
+        // 보스 턴 시작, 지속 이벤트 구독은 제외
         Enemy.ForEach(x => {
             TurnActive += x.CommonBuffAndDebuffDurationDiscount;
             TurnActive += x.TakeDotDamage;
         });
-
+        
         
     }
     // next
     public void NextBattleInit(int round,Player player, Dictionary<string, object> roundData)
     {
         Player = player;
+        Player.EffectReset();
         Enemy = new();
 
         foreach (var data in roundData)
@@ -91,16 +96,31 @@ public class BattleManager
             int maxHp = enemyData.TryGetValue(MAX_HP, out object? maxHpVal) &&
                 maxHpVal is int hpData ? hpData : 80;
 
-            Enemy.Add(new(id, name, maxHp,
+            // 보스 스테이지일 경우
+            if (enemyData.ContainsKey(IS_BOSS))
+            {
+                Enemy.Add(new Boss(id, name, maxHp, bossData[id],
+                [
+                    new Skill(SkillData.BossSkills[0], 0),
+                    new Skill(SkillData.BossSkills[1], 0),
+                    new Skill(SkillData.BossSkills[2], 0)
+                ]
+               ));
+            }
+            else
+            {
+                Enemy.Add(new(id, name, maxHp,
                 [
                     new Skill(SkillData.EnemySkills[0], 0),
                     new Skill(SkillData.EnemySkills[1], 0),
                     new Skill(SkillData.EnemySkills[2], 0)
                 ]
                 ));
+            }
         }
 
         Enemy.ForEach(x => {
+            if (x is Boss bX) TurnEnd += bX.TurnEndPassiveEffect;
             TurnActive += x.CommonBuffAndDebuffDurationDiscount;
             TurnActive += x.TakeDotDamage;
         });
@@ -151,11 +171,14 @@ public class BattleManager
 
         Dictionary<string, int> firstCoinAtkVal = CoinAndAtkPointCalc(first, secondChara);
         Dictionary<string, int> secondCoinAtkVal = CoinAndAtkPointCalc(second, firstChara);
+        Dictionary<string, int> firstCoinAtkBuffVal = CoinAndAtkPointBuffCalc(firstChara);
+        Dictionary<string, int> secondCoinAtkBuffVal = CoinAndAtkPointBuffCalc(secondChara);
 
-        int firstAtk = first.AttackPoint + firstCoinAtkVal[ATK];
-        int secondAtk = second.AttackPoint + secondCoinAtkVal[ATK];
-        int firstCoinPoint = first.CoinPoint + firstCoinAtkVal[COIN_POINT];
-        int secondCoinPoint = second.CoinPoint + secondCoinAtkVal[COIN_POINT];
+        int firstAtk = first.AttackPoint + firstCoinAtkVal[ATK] + firstCoinAtkBuffVal[ATK];
+        int secondAtk = second.AttackPoint + secondCoinAtkVal[ATK] + secondCoinAtkBuffVal[ATK];
+        int firstCoinPoint = first.CoinPoint + firstCoinAtkVal[COIN_POINT] + firstCoinAtkBuffVal[COIN_POINT];
+        int secondCoinPoint = second.CoinPoint + secondCoinAtkVal[COIN_POINT] + secondCoinAtkBuffVal[COIN_POINT];
+
         int totalCrashCount = 0;
         // 이름 배정
         int vsLeng = 0;
@@ -177,6 +200,9 @@ public class BattleManager
         {
             Console.Write(new string(' ', Console.WindowWidth));
         }
+
+        firstChara.TakeBuff(USE, first.SkillEffect);
+        secondChara.TakeBuff(USE, second.SkillEffect);
 
         //합 전체가 끝날때까지 루프
         while (true)
@@ -351,9 +377,10 @@ public class BattleManager
 
         // skill 데이터 로드, 추가 조건 검사(위력 / 코인값 추가되는지)
         Dictionary<string, int> coinAtkVal = CoinAndAtkPointCalc(skill, target);
+        Dictionary<string, int> coinAtkBuffVal = CoinAndAtkPointBuffCalc(user);
 
-        int atk = skill.AttackPoint + coinAtkVal[ATK];
-        int coinPoint = skill.CoinPoint + coinAtkVal[COIN_POINT];
+        int atk = skill.AttackPoint + coinAtkVal[ATK] + coinAtkBuffVal[ATK];
+        int coinPoint = skill.CoinPoint + coinAtkVal[COIN_POINT] + coinAtkBuffVal[COIN_POINT];
         int coinPointTotal = 0;
         // 
 
@@ -455,9 +482,10 @@ public class BattleManager
     {
         // skill 데이터 로드, 추가 조건 검사(위력 / 코인값 추가되는지)
         Dictionary<string, int> coinAtkVal = CoinAndAtkPointCalc(skill, target);
+        Dictionary<string, int> coinAtkBuffVal = CoinAndAtkPointBuffCalc(user);
 
-        int atk = skill.AttackPoint + coinAtkVal[ATK];
-        int coinPoint = skill.CoinPoint + coinAtkVal[COIN_POINT];
+        int atk = skill.AttackPoint + coinAtkVal[ATK] + coinAtkBuffVal[ATK];
+        int coinPoint = skill.CoinPoint + coinAtkVal[COIN_POINT] + coinAtkBuffVal[COIN_POINT];
         int coinPointTotal = 0;
         // 
 
@@ -515,7 +543,7 @@ public class BattleManager
 		int coinPoint = 0;
 		int coin = 0;
         int damage = 0;
-
+        // 디버프로 인한 스킬효과로 상승하는 피해량
 		foreach(var data in skill.SkillEffect)
 		{
 			string condition = data[0];
@@ -548,6 +576,36 @@ public class BattleManager
 
         return result;
 	}
+
+    public Dictionary<string, int> CoinAndAtkPointBuffCalc(Character user)
+    {
+        int atk = 0;
+        int coinPoint = 0;
+        int coin = 0;
+        int damage = 0;
+
+
+        //버프를 가지고 있을 경우 상승하는 피해량
+        foreach (var data in user.BuffList)
+        {
+            string id =data.Id;
+            if(id == ATK_POINT)
+            {
+                 atk += data.Coefficient;
+            }
+        }
+
+        Dictionary<string, int> result = new()
+        {
+            [ATK] = atk,
+            [COIN] = coin,
+            [COIN_POINT] = coinPoint,
+            [DAMAGE] = damage
+        };
+
+
+        return result;
+    }
 
     public bool PlayCk()
     {

@@ -3,9 +3,9 @@ using ConsoleGameFramework.Data;
 using ConsoleGameFramework.Models;
 using ConsoleGameFramework.Skills;
 using ConsoleGameFramework.UI;
-using System;
+using ConsoleGameFramework.Data;
+using static ConsoleGameFramework.Common.Constants;
 using System.Text;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ConsoleGameFramework.Scenes;
 
@@ -53,7 +53,25 @@ public class BattleScene : SceneBase
         battleManager.TurnActive?.Invoke();
         
         ConsoleUI.Clear();
-        ConsoleUI.WriteTitle("전투 개시", $"라운드 : {context.NowRound + 1}");
+        if (context.IsBoss)
+        {
+            Boss? data = battleManager.Enemy.Find(x => x is Boss data2) as Boss;
+
+            ConsoleUI.WriteTitle("보스 라운드", $"※ 보스는 항상 최소 1개 이상의 패시브를 가지고 있습니다.");
+            StringBuilder sb = new();
+            if (data != null)
+            {
+                string[] passiveData = BossData.bossData[data.Id];
+
+                ConsoleUI.WriteBox([passiveData[5], $""], "보스 패시브");
+            }
+            else
+            {
+                ConsoleUI.WriteBox(["없음", $""], "보스 패시브");
+            }
+
+        } else
+            ConsoleUI.WriteTitle("전투 개시", $"라운드 : {context.NowRound + 1}");
         // StatusBar 오버로딩으로 Sanity까지 표시하도록 변경
         ConsoleUI.WriteStatusBar(nowPlayer, nowPlayer.Name,
             nowPlayer.Sanity,
@@ -68,7 +86,7 @@ public class BattleScene : SceneBase
         {
             ConsoleUI.WriteStatusBar(x, x.Name, x.Sanity, x.Hp, max:x.MaxHp,
                 fillColor:
-                x.Hp / 100.0f < 0.5f ?
+                x.Hp / (float)x.MaxHp < 0.5f ?
                 ConsoleColor.DarkYellow : x.Hp / (float)x.MaxHp < 0.1f ?
                 ConsoleColor.DarkRed : ConsoleColor.Green
             );
@@ -114,6 +132,8 @@ public class BattleScene : SceneBase
         {
             useAbleSkill.Clear();
             battleManager = new BattleManager();
+            context.NowRound = 0;
+            context.NowStage = 0;
             GoTo(context, SceneKey.HomeTown); return;
         }
 
@@ -183,7 +203,9 @@ public class BattleScene : SceneBase
 
             if (x.Id != enemyData.Id)
             {
-                int oneDamage = battleManager.SkillDamageInstant(x.GetSkillQueue(), x, playerData);
+                Skill otherSkill = x.GetSkillQueue();
+                x.TakeBuff(USE, otherSkill.SkillEffect);
+                int oneDamage = battleManager.SkillDamageInstant(otherSkill, x, playerData);
                 context.AddLog($"{x.Name}이(가) {playerData.Name}에게 {oneDamage}의 피해를 주었습니다.");
             }
         }
@@ -195,28 +217,45 @@ public class BattleScene : SceneBase
             {
                 if (context.IsBoss)
                 {
+                    context.NowStage++;
                     // 보스 승리 시
                     // 승리 멘트 + 게임 종료
+                    Console.WriteLine("게임 오버");
+                    context.Game.RequestQuit();
+                    return;
                 }
                 else
                 {
                     context.NowRound++;
                     battleManager = new BattleManager();
-
-                    // 데이터 로드, 플레이어 정보를 유지하기 위해 Enemy만 로드
-                    battleManager.NextBattleInit(context.NowRound, playerData,
+                    // 이번 스테이지에 다음 일반 라운드가 존재하지 않을 경우 보스 라운드로 진입
+                    if(RoundData.StageRoundList[context.NowStage].Count <= context.NowRound)
+                    {
+                        // 보스 데이터 로드
+                        battleManager.NextBattleInit(context.NowStage, playerData,
+                        RoundData.BossRoundList[context.NowStage]);
+                        context.IsBoss = true;
+                    }
+                    // 아닌 경우 일반 라운드로 진입
+                    else
+                    {
+                        // 데이터 로드, 플레이어 정보를 유지하기 위해 Enemy만 로드
+                        battleManager.NextBattleInit(context.NowRound, playerData,
                         RoundData.StageRoundList[context.NowStage][context.NowRound]);
-                    battleManager.Player.StageClear();
+                        
+                    }
+                    battleManager.Player.RoundClear();
+                    return;
                 }
             }
             else
             {
                 ConsoleUI.WriteLine("전투 패배");
-                GameManager.Instance.RequestQuit();
+                context.Game.RequestQuit();
             }
         }
-        
 
+        battleManager.TurnEnd?.Invoke(battleManager.Player,battleManager.Enemy);
         return;
     }
 }

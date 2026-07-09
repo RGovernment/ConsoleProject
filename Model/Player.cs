@@ -18,10 +18,11 @@ public class Player : Character
 
 	}
 
-    public void StageClear()
+    public void RoundClear()
     {
         int heal = (int)(MaxHp / 5f);
         TakeHeal(heal);
-        GameManager.Instance.Context.AddLog($"스테이지 클리어로 체력이 {heal} 회복되었습니다.");
+        GameManager.Instance.Context.AddLog($"라운드 클리어!");
+        GameManager.Instance.Context.AddLog($"라운드 클리어로 체력이 {heal} 회복되었습니다.");
     }
 }

@@ -55,11 +55,11 @@ public class RoundData
     {
         ["boss1"] = new Dictionary<string, object>()
         {
-            [ID] = "20001",
+            [ID] = "30000",
             [NAME] = "재앙의 전조",
             [MAX_HP] = 150,
             [IS_BOSS] = true
-        }
+        },
         ["dummy3"] = new Dictionary<string, object>()
         {
             [ID] = "20002",

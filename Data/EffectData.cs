@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static ConsoleGameFramework.Common.Constants;
 
-namespace ConsoleGameFramework.Models;
+namespace ConsoleGameFramework.Data;
 
 public class EffectData
 {

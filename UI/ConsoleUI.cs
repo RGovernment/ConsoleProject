@@ -1,5 +1,6 @@
 using ConsoleGameFramework.Common;
 using System.Text;
+using ConsoleGameFramework.Models;
 using static ConsoleGameFramework.Common.Enums;
 using static ConsoleGameFramework.Common.Constants;
 using static ConsoleGameFramework.Common.UtilityExtension;
@@ -114,6 +115,22 @@ public static class ConsoleUI
         _isFrameOpen = true;
     }
 
+    /// <summary>
+    /// 버퍼에서 일부분을 삭제, 범위가 버퍼 크기보다 클 경우 전체 삭제
+    /// </summary>
+    /// <param name="range">삭제 범위</param>
+    public static void ClearRange(int range)
+    {
+        if (range >= _frameLines.Count)
+        {
+            _frameLines.Clear();
+            return;
+        }
+
+        int startIndex = _frameLines.Count - range;
+
+        _frameLines.RemoveRange(startIndex, range);
+    }
     /// <summary>
     /// 버퍼에 쌓인 한 프레임을 콘솔 화면에 반영합니다.
     /// Console.Clear() 대신 커서를 맨 위로 옮긴 뒤 줄 단위로 덮어써서 깜빡임을 줄입니다.
@@ -550,7 +567,8 @@ public static class ConsoleUI
         WriteColored($"{current}/{max}", ConsoleColor.White);
     }
 
-    public static void WriteStatusBar(string label, int sanity, int current, int max, int barWidth = 24, ConsoleColor fillColor = ConsoleColor.Green)
+    public static void WriteStatusBar(Character chara, string label,
+        int sanity, int current, int max, int barWidth = 24, ConsoleColor fillColor = ConsoleColor.Green)
     {
         max = Math.Max(1, max);
         current = Math.Clamp(current, 0, max);
@@ -565,6 +583,35 @@ public static class ConsoleUI
         WriteColored(new string('░', empty), ConsoleColor.DarkGray, null, false);
         Write("] ");
         WriteColored($"체력 : {current}/{max} | 정신력 : {sanity}", ConsoleColor.White);
+        StringBuilder sb = new();
+
+        if (chara.BuffList.Count > 0)
+        {
+            sb.Append("버프 : ");
+
+            chara.BuffList.ForEach(x => {
+                    sb.Append($"{x.Name}");
+                sb.Append($" {x.Coefficient}");
+                
+                if (x.Duration == -1) sb.Append($" - 소멸시까지 지속 \n");
+                else sb.Append($" - {x.Duration} 턴 지속 \n");
+            });
+        }
+
+        if(chara.DebuffList.Count > 0)
+        {
+            sb.Append("디버프 : ");
+
+            chara.DebuffList.ForEach(x => {
+                sb.Append($"{x.Name}");
+                sb.Append($" {x.Coefficient}");
+
+                if (x.Duration == -1) sb.Append($" - 소멸시까지 지속 \n");
+                else sb.Append($" - {x.Duration} 턴 지속 \n");
+            });
+        }
+        
+        WriteLine($"{sb}");
     }
 
     /// <summary>
@@ -869,7 +916,7 @@ public static class ConsoleUI
         WriteLine();
     }
 
-    public static void WriteLog(IEnumerable<string> logs, int maxLines = 8)
+    public static void WriteLog(IEnumerable<string> logs, int maxLines = LOG_LINE_LIMIT)
     {
         List<string> logLines = logs.TakeLast(maxLines).ToList();
 

@@ -14,8 +14,8 @@ namespace ConsoleGameFramework.Scenes
         private static readonly List<MenuOption> Menu = new()
         {
             new (1, "훈련장", "훈련장으로 이동합니다."),
-            new (2, "상점", "상점으로 이동합니다."),
-            new (3, "출발", "던전 내부로 이동합니다."),
+            /*new (2, "상점", "상점으로 이동합니다."),*/
+            new (2, "출발", "던전 내부로 이동합니다."),
             new (0, "메인화면", "메인화면으로 이동합니다.")
         };
 
@@ -28,11 +28,8 @@ namespace ConsoleGameFramework.Scenes
 
         public override void Render(GameContext context)
         {
-            ConsoleUI.Clear();
+            //ConsoleUI.Clear();
             ConsoleUI.WriteTitle("홈타운", "던전의 시작");
-
-            ConsoleUI.Clear();
-            ConsoleUI.WriteTitle("훈련장", "힘이 모이는 곳");
 
             ConsoleUI.WriteTable(
             headers: ["이름", "로벤"],
@@ -59,12 +56,10 @@ namespace ConsoleGameFramework.Scenes
                 case 1:
                     GoTo(context, SceneKey.TrainingHall);
                     break;
-                case 2:
+                /*case 2:
                     GoTo(context, SceneKey.Shop);
-                    break;
-                case 3:
-                    //context.LodingTarget = SceneKey.Battle;
-                    //GoTo(context, SceneKey.Loading);
+                    break;*/
+                case 2:
                     GoTo(context, SceneKey.Battle);
                     break;
                 case 0:

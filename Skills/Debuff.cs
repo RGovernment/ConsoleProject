@@ -8,7 +8,8 @@ namespace ConsoleGameFramework.Skills;
 
 public class Debuff : EffectStatus
 {
-    public Debuff(string name, string id, string description, List<string> effect) : base(name, id, description, effect)
+    public Debuff(string name, string id, int coeffi, string description, int duration) : 
+        base(name, id, coeffi, description, duration)
     {
     }
 }

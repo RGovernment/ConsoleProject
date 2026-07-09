@@ -13,7 +13,6 @@ namespace ConsoleGameFramework.Core;
 /// </summary>
 public class GameContext
 {
-    private const int MaxLogCount = 10;
 
     public GameContext(GameManager game)
     {
@@ -56,7 +55,7 @@ public class GameContext
     {
         Logs.Add($"[{DateTime.Now:HH:mm:ss}] {message}");
 
-        while (Logs.Count > MaxLogCount)
+        while (Logs.Count > LOG_LINE_LIMIT)
         {
             Logs.RemoveAt(0);
         }
@@ -68,6 +67,7 @@ public class GameContext
     public int NowRound { get; set; } = 0;
     public int NowStage { get; set; } = 0;
     public bool IsBoss { get; set; }
+    public bool IsLose { get; set; }
     public SceneKey LodingTarget { get; set; }
     public Encoding Euckr { get; }
 

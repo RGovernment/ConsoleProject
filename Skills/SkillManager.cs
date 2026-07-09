@@ -80,7 +80,7 @@ public static class SkillManager// : MonoBehaviour
         }
 
         GameManager.Instance.Context.NowMoney -= cost * skillData.Grade;
-
+        
         return true;
     }
 }

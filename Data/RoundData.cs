@@ -17,27 +17,55 @@ public class RoundData
         {
             [ID] = "20000",
             [NAME] = "잡몹1",
-            [MAX_HP] = 100
-        }
-
+            [MAX_HP] = 5
+        },
         ["dummy2"] = new Dictionary<string, object>()
         {
             [ID] = "20001",
             [NAME] = "잡몹2",
-            [MAX_HP] = 80
+            [MAX_HP] = 6
         }
     };
 
     // 스테이지 1 라운드 2
     private static Dictionary<string, object> round2 = new()
     {
-
+        ["dummy"] = new Dictionary<string, object>()
+        {
+            [ID] = "20000",
+            [NAME] = "잡몹1",
+            [MAX_HP] = 50
+        },
+        ["dummy2"] = new Dictionary<string, object>()
+        {
+            [ID] = "20001",
+            [NAME] = "잡몹2",
+            [MAX_HP] = 60
+        },
+        ["dummy3"] = new Dictionary<string, object>()
+        {
+            [ID] = "20002",
+            [NAME] = "잡몹3",
+            [MAX_HP] = 80
+        }
     };
 
     // 보스 스테이지
     private static Dictionary<string, object> bossRound1 = new()
     {
-
+        ["boss1"] = new Dictionary<string, object>()
+        {
+            [ID] = "30000",
+            [NAME] = "재앙의 전조",
+            [MAX_HP] = 150,
+            [IS_BOSS] = true
+        },
+        ["dummy3"] = new Dictionary<string, object>()
+        {
+            [ID] = "20002",
+            [NAME] = "잡몹3",
+            [MAX_HP] = 80
+        }
     };
 
 

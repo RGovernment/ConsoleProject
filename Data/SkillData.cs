@@ -27,7 +27,7 @@ public static class SkillData
         [DESCRIPTION] = "적에게 화상이 있을 경우 피해량 30% 증가",
         [SKILL_EFFECT] = 
         new List<string[]> { 
-            new [] { "burn", "damage", "30" } 
+            new [] { "haveBurn", "damage", "30" , "0"} 
         }
     };
     public static Dictionary<string, object> DoubleThrust = new()
@@ -39,11 +39,11 @@ public static class SkillData
         [COIN] = 2,
         [ATK_POINT] = 6,
         [COIN_POINT] = 3,
-        [DESCRIPTION] = "적중 시 적에게 화상 1 부여/적에게 화상이 있을 경우 코인 위력 1 증가",
+        [DESCRIPTION] = "적중 시 적에게 화상 3 부여/적에게 화상이 있을 경우 코인 위력 1 증가",
         [SKILL_EFFECT] = 
         new List<string[]> { 
-            new [] { "givenHit", "burn", "1" },
-            new [] {"haveBurn", "cointPoint", "1" }
+            new [] { "givenHit", "burn", "3", "-1" },
+            new [] {"haveBurn", "coinPoint", "1", "0" }
         }
     };
     public static Dictionary<string, object> SilverPiercing = new ()
@@ -55,50 +55,50 @@ public static class SkillData
         [COIN] = 4,
         [ATK_POINT] = 7,
         [COIN_POINT] = 2,
-        [DESCRIPTION] = "적에게 화상이 있을 경우 코인 위력 2 증가/사용 시 다음 턴에 사용하는 스킬의 공격력 3 증가",
+        [DESCRIPTION] = "적에게 화상이 있을 경우 코인 위력 2 증가/사용 시 2턴 동안 사용하는 스킬의 공격력 3 증가",
         [SKILL_EFFECT] = 
         new List<string[]> {
-            new[] { "haveBurn", "cointPoint", "2" },
-            new[] { "use", "nextAtkPoint", "3" }
+            new[] { "haveBurn", "coinPoint", "2", "0" },
+            new[] { "use", "atkPoint", "3" , "2"}
         }
     };
 
     public static Dictionary<string, object> EnemyAttack1 = new()
     {
         [ID] = "enemy1",
-        [NAME] = "얍얍",
+        [NAME] = "밀치기",
         [MAX_GRADE] = "0",
         [GRADE_EFFECT] = Array.Empty<string>(),
         [COIN] = 1,
         [ATK_POINT] = 3,
         [COIN_POINT] = 4,
-        [DESCRIPTION] = "얍얍얍!!",
+        [DESCRIPTION] = "없음",
         [SKILL_EFFECT] = new List<string[]> {}
     };
 
     public static Dictionary<string, object> EnemyAttack2 = new()
     {
         [ID] = "enemy2",
-        [NAME] = "얍얍2",
+        [NAME] = "베기",
         [MAX_GRADE] = "0",
         [GRADE_EFFECT] = Array.Empty<string>(),
         [COIN] = 2,
         [ATK_POINT] = 4,
         [COIN_POINT] = 3,
-        [DESCRIPTION] = "얍얍얍!!!",
+        [DESCRIPTION] = "없음",
         [SKILL_EFFECT] = new List<string[]> { }
     };
 
     public static Dictionary<string, object> EnemyAttack3 = new()
     {
         [ID] = "enemy3",
-        [NAME] = "얍얍3",
+        [NAME] = "후려치기",
         [MAX_GRADE] = "0",
         [GRADE_EFFECT] = Array.Empty<string>(),
         [COIN] = 3,
         [ATK_POINT] = 3,
         [COIN_POINT] = 4,
-        [DESCRIPTION] = "얍얍얍얍!!!!",
+        [DESCRIPTION] = "없음",
         [SKILL_EFFECT] = new List<string[]> { }
     };
 

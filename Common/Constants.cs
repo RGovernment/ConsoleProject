@@ -3,6 +3,7 @@
 public static class Constants
 {
     public const int LOAD_TEXT_LENG = 43;
+    public const int LOG_LINE_LIMIT = 10;
     public const string DEFAULT_STRING = "                                           ";
     public const string TYPE = "type";
     public static int[] X_DIRECTION = { -1, 1, 0, 0 };
@@ -33,6 +34,7 @@ public static class Constants
 
     // 조건 Id
     public const string HAVE_BURN = "haveBurn";
+    public const string IS_BOSS = "isBoss";
 
     // 버프/디버프 관련 호출
     public const string BURN = "burn";

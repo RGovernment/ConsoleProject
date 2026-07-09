@@ -1,4 +1,5 @@
 ﻿using ConsoleGameFramework.Common;
+using ConsoleGameFramework.Core;
 using ConsoleGameFramework.Skills;
 using static ConsoleGameFramework.Common.Constants;
 using static System.Net.Mime.MediaTypeNames;
@@ -69,25 +70,35 @@ public class Character
     public void TakeBuff(string condition, List<string[]> data)
     {
         data.ForEach(x => {
-            foreach (var item in x)
+            if (x[0] == condition && x[1] == ATK_POINT)
             {
-                if (x[0] == condition && x[1] == ATK_POINT)
-                {
-                    Buff? data = BuffList.FirstOrDefault(x => x.Id == ATK_POINT);
+                Buff? data = BuffList.FirstOrDefault(x => x.Id == ATK_POINT);
 
-                    if (data != null)
+                if (data != null)
+                {
+                    //같은 종류의 버프지만 효과가 더 좋은 경우
+                    if(data.Coefficient < Convert.ToInt32(x[2]))
                     {
-                        data.Coefficient += Convert.ToInt32(x[3]);
+                        // 지속, 효과 갱신
+                        data.Coefficient = Convert.ToInt32(x[2]);
+                        data.Duration = Convert.ToInt32(x[3]);
                     }
-                    else
-                    {
-                        BuffList.Add(new Buff("공격력 증가", ATK_POINT,
-                        Convert.ToInt32(x[2]),
-                        "공격력이 증가한다.",
-                        Convert.ToInt32(x[3]))
-                        );
-                    }
-                    
+                    // 같은 종류의 버프이며 효과가 같지만 지속시간이 더 긴 경우
+                    else if(data.Coefficient == Convert.ToInt32(x[2]) && 
+                    data.Duration < Convert.ToInt32(x[3]))
+                        // 지속 시간 갱신
+                        data.Duration = Convert.ToInt32(x[3]);
+                    // 같은 버프를 더 강한 효과로 가지고 있거나
+                    // 효과는 같지만 이미 걸려있는 효과가 지속시간이 더 긴 경우 무시
+                    // 단 연장형 효과는 추가시 예외 처리
+                }
+                else
+                {
+                    BuffList.Add(new Buff("공격력 증가", ATK_POINT,
+                    Convert.ToInt32(x[2]),
+                    "공격력이 증가한다.",
+                    Convert.ToInt32(x[3]))
+                    );
                 }
             }
         });
@@ -102,7 +113,21 @@ public class Character
                 Debuff? data = DebuffList.FirstOrDefault(x => x.Id == BURN);
                 if(data != null)
                 {
-                    data.Coefficient += Convert.ToInt32(x[2]);
+                    //같은 종류의 디버프지만 효과가 더 좋은 경우
+                    if (data.Coefficient < Convert.ToInt32(x[2]))
+                    {
+                        // 지속, 효과 갱신
+                        data.Coefficient = Convert.ToInt32(x[2]);
+                        data.Duration = Convert.ToInt32(x[3]);
+                    }
+                    // 같은 종류의 디버프이며 효과가 같지만 지속시간이 더 긴 경우
+                    else if (data.Coefficient == Convert.ToInt32(x[2]) &&
+                    data.Duration < Convert.ToInt32(x[3]))
+                        // 지속 시간 갱신
+                        data.Duration = Convert.ToInt32(x[3]);
+                    // 같은 디버프를 더 강한 효과로 가지고 있거나
+                    // 효과는 같지만 이미 걸려있는 효과가 지속시간이 더 긴 경우 무시
+                    // 단 연장형 효과는 추가시 예외 처리
                 }
                 else
                 {
@@ -154,6 +179,7 @@ public class Character
             if(x.Id == BURN)
             {
                 TakeDamage(x.Coefficient);
+                GameManager.Instance.Context.AddLog($"{Name}이(가) 화상 피해 {x.Coefficient} 입음");
                 x.Coefficient /= 2;
             }
         });
@@ -164,6 +190,26 @@ public class Character
     public void GainSanity(int gain)
     {
         Sanity = Math.Clamp(Sanity + gain, -45, this is Enemy ? 20 : 45);
+        GameManager.Instance.Context.AddLog($"{Name}이(가) 정신력 {gain} 회복");
+    }
+
+    public void MakeSkillQueue()
+    {
+        if (SkillList.Count < 3 || SkillQueue.Count != 0) return;
+
+        if (SkillQueue.Count == 0)
+        {
+            List<Skill> skill = new()
+            {
+                SkillList[0],SkillList[0],SkillList[0],SkillList[1],SkillList[1],SkillList[2]
+            };
+
+            skill.Shuffle();
+            skill.ForEach(x => SkillQueue.Enqueue(x));
+
+            skill.Shuffle();
+            skill.ForEach(x => NextQueue.Enqueue(x));
+        }
     }
 
     /// <summary>

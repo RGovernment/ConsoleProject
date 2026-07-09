@@ -66,39 +66,39 @@ public static class SkillData
     public static Dictionary<string, object> EnemyAttack1 = new()
     {
         [ID] = "enemy1",
-        [NAME] = "얍얍",
+        [NAME] = "밀치기",
         [MAX_GRADE] = "0",
         [GRADE_EFFECT] = Array.Empty<string>(),
         [COIN] = 1,
         [ATK_POINT] = 3,
         [COIN_POINT] = 4,
-        [DESCRIPTION] = "얍얍얍!!",
+        [DESCRIPTION] = "없음",
         [SKILL_EFFECT] = new List<string[]> {}
     };
 
     public static Dictionary<string, object> EnemyAttack2 = new()
     {
         [ID] = "enemy2",
-        [NAME] = "얍얍2",
+        [NAME] = "베기",
         [MAX_GRADE] = "0",
         [GRADE_EFFECT] = Array.Empty<string>(),
         [COIN] = 2,
         [ATK_POINT] = 4,
         [COIN_POINT] = 3,
-        [DESCRIPTION] = "얍얍얍!!!",
+        [DESCRIPTION] = "없음",
         [SKILL_EFFECT] = new List<string[]> { }
     };
 
     public static Dictionary<string, object> EnemyAttack3 = new()
     {
         [ID] = "enemy3",
-        [NAME] = "얍얍3",
+        [NAME] = "후려치기",
         [MAX_GRADE] = "0",
         [GRADE_EFFECT] = Array.Empty<string>(),
         [COIN] = 3,
         [ATK_POINT] = 3,
         [COIN_POINT] = 4,
-        [DESCRIPTION] = "얍얍얍얍!!!!",
+        [DESCRIPTION] = "없음",
         [SKILL_EFFECT] = new List<string[]> { }
     };
 

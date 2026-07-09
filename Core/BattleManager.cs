@@ -34,9 +34,9 @@ public class BattleManager
 	// 적
 	public List<Enemy> Enemy { get; private set; }
 
-
-	// 플레이어와 적을 생성하고, 초기화하는 함수.
-	public void StartBattleInit(int round, Dictionary<string, object> roundData)
+    public Action TurnActive;
+    // 플레이어와 적을 생성하고, 초기화하는 함수.
+    public void StartBattleInit(int round, Dictionary<string, object> roundData)
 	{
 		Player = new(PlayerManager.Instance.playerStatus);
 		Enemy = new();
@@ -61,6 +61,17 @@ public class BattleManager
                 ] 
 				));
 		}
+
+        TurnActive -= Player.CommonBuffAndDebuffDurationDiscount;
+        TurnActive -= Player.TakeDotDamage;
+        TurnActive += Player.CommonBuffAndDebuffDurationDiscount;
+        TurnActive += Player.TakeDotDamage;
+        Enemy.ForEach(x => {
+            TurnActive += x.CommonBuffAndDebuffDurationDiscount;
+            TurnActive += x.TakeDotDamage;
+        });
+
+        
     }
     // next
     public void NextBattleInit(int round,Player player, Dictionary<string, object> roundData)
@@ -88,6 +99,11 @@ public class BattleManager
                 ]
                 ));
         }
+
+        Enemy.ForEach(x => {
+            TurnActive += x.CommonBuffAndDebuffDurationDiscount;
+            TurnActive += x.TakeDotDamage;
+        });
     }
 
     public enum BattleOutcome
@@ -117,7 +133,7 @@ public class BattleManager
 	/// <param name="firstId">대결할 스킬1 보유자의 ID</param>
 	/// <param name="secondId">대결할 스킬2 보유자의 ID</param>
     /// <returns>계산 완료된 스킬</returns>
-    public async Task<(Character winner, Character loser, Skill skill)> SkillClash(
+    public (Character winner, Character loser, Skill skill) SkillClash(
 		Skill first, Skill second, 
 		Character firstChara, Character secondChara)
 	{
@@ -140,7 +156,7 @@ public class BattleManager
         int secondAtk = second.AttackPoint + secondCoinAtkVal[ATK];
         int firstCoinPoint = first.CoinPoint + firstCoinAtkVal[COIN_POINT];
         int secondCoinPoint = second.CoinPoint + secondCoinAtkVal[COIN_POINT];
-
+        int totalCrashCount = 0;
         // 이름 배정
         int vsLeng = 0;
 
@@ -148,12 +164,14 @@ public class BattleManager
 		else vsLeng = second.Name != null ? second.Name.Length : 2;
 
 		StringBuilder vsLengSb = new();
-		string vsString= vsLengSb.StrLengExtend(Math.Max(2, vsLeng), "vs");
+        vsLengSb.Append("vs");
+        string vsString = vsLengSb.StrLengExtend(Math.Max(2, vsLeng), "vs");
+        
         string[] lastData = new string[5];
         //이후 구간, 계산 및 출력 반복
         // 출력된 10줄 시작점으로 이동해 다시 콘솔 출력(코인 던지기 반복 어색하지 않게)
         int currentLineCursor = Console.CursorTop - 10;
-        int totalCrashCount = 0;
+        
         Console.SetCursorPosition(0, currentLineCursor);
         for (int i = 0; i < 10; i++)
         {
@@ -175,14 +193,19 @@ public class BattleManager
 			while (true)
 			{
 				if (count >= first.Coin && count >= second.Coin) break;
+                // 공격자 방어자 코인 앞/뒤 체크
 				bool firstNowToss = CoinToss(firstChara.Sanity);
 				bool secondNowToss = CoinToss(secondChara.Sanity);
 				int coinFlip = 0;
 				int turnCount = 0;
 				int turnMax = 20;
+                // 현재 합 횟수 출력
+                vsLengSb.Clear();
+                vsLengSb.Append(vsString); 
+                if(totalCrashCount > 0) vsLengSb.Append($"{totalCrashCount}합");
 
-				// 공격력 or 코인 위력에 추가 조건이 있는지 검사
-				if (first.Coin > count) sb.Append(leftCoin);
+                // 공격력 or 코인 위력에 추가 조건이 있는지 검사
+                if (first.Coin > count) sb.Append(leftCoin);
 				if (second.Coin > count) sb2.Append(leftCoin);
 
 				while (turnCount < turnMax)
@@ -207,7 +230,7 @@ public class BattleManager
 					[
 						$"{first.Name} [ 공격력 : {firstAtk + firstCoinPointTotal} ]",
 									sb.ToString(),
-                                    vsString.ToString(),
+                                    vsLengSb.ToString(),
 									$"{second.Name} [ 공격력 : {secondAtk + secondCoinPointTotal} ]",
 									sb2.ToString()
 					],
@@ -215,9 +238,9 @@ public class BattleManager
 					);
 					ConsoleUI.Present();
 					turnCount++;
-					await Task.Delay(18);
+					Thread.Sleep(18);
 				}
-
+                // 공격자가 아직 코인이 남은 경우 코인 계산
 				if (first.Coin > count)
 				{
 					if (firstNowToss)
@@ -228,8 +251,8 @@ public class BattleManager
 					}
 					else sb[^1] = reverseCoin;
 				}
-
-				if (second.Coin > count)
+                // 방어자가 아직 코인이 남은 경우 코인 계산 2
+                if (second.Coin > count)
 				{
 					if (secondNowToss)
 					{
@@ -245,7 +268,7 @@ public class BattleManager
                 lastData = [
                     $"{first.Name} [ 공격력 : {firstAtk + firstCoinPointTotal} ]",
                     sb.ToString(),
-                    vsString.ToString(),
+                    vsLengSb.ToString(),
                     $"{second.Name} [ 공격력 : {secondAtk + secondCoinPointTotal} ]",
                     sb2.ToString()
                 ];
@@ -254,7 +277,7 @@ public class BattleManager
 				[
 					$"{first.Name} [ 공격력 : {firstAtk + firstCoinPointTotal} ]",
 					sb.ToString(),
-                    vsString.ToString(),
+                    vsLengSb.ToString(),
 					$"{second.Name} [ 공격력 : {secondAtk + secondCoinPointTotal} ]",
 					sb2.ToString()
 				],
@@ -263,7 +286,7 @@ public class BattleManager
 				ConsoleUI.Present();
 				//count가 첫번째 스킬 코인보다도 높고, 두번째 스킬 코인 보다도 높을때 종료
 
-				await Task.Delay(100);
+				Thread.Sleep(100);
 
 				count++;
 
@@ -310,13 +333,13 @@ public class BattleManager
 	}
 
     /// <summary>
-    /// 공격 스킬 대미지 판정 계산 (동전 있음)
+    /// 공격 스킬 대미지 판정 계산 (동전 있음), 구조는 합 로직과 동일
     /// </summary>
     /// <param name="skill"></param>
     /// <param name="user"></param>
     /// <param name="target"></param>
     /// <returns></returns>
-	public async Task<int> SkillDamage(Skill skill,Character user, Character target)
+	public int SkillDamage(Skill skill,Character user, Character target)
 	{
         // 기본 정보
         StringBuilder sb = new();
@@ -337,7 +360,7 @@ public class BattleManager
         sb.Clear();
         int count = 0;
 
-        // 출력된 10줄 시작점으로 이동해 다시 콘솔 출력(코인 던지기 반복 어색하지 않게)
+        // 출력된 7줄 시작점으로 이동해 다시 콘솔 출력(코인 던지기 반복 어색하지 않게)
         int currentLineCursor = Console.CursorTop - 7;
 
         // 루프
@@ -377,7 +400,7 @@ public class BattleManager
                 );
                 ConsoleUI.Present();
                 turnCount++;
-                await Task.Delay(9);
+                Thread.Sleep(9);
             }
 
             if (skill.Coin > count)
@@ -401,12 +424,11 @@ public class BattleManager
             "대미지", ConsoleColor.DarkYellow
             );
             ConsoleUI.Present();
-            //count가 첫번째 스킬 코인보다도 높고, 두번째 스킬 코인 보다도 높을때 종료
 
-            await Task.Delay(50);
+            Thread.Sleep(50);
             count++;
         }
-
+        Thread.Sleep(50);
         int damageIncrease = 100 + CoinAndAtkPointCalc(skill, target)[DAMAGE];
         int totalDamage = 0;
         if (damageIncrease == 0)
@@ -429,7 +451,7 @@ public class BattleManager
     /// <param name="user"></param>
     /// <param name="target"></param>
     /// <returns></returns>
-    public async Task<int> SkillDamageInstant(Skill skill, Character user, Character target)
+    public int SkillDamageInstant(Skill skill, Character user, Character target)
     {
         // skill 데이터 로드, 추가 조건 검사(위력 / 코인값 추가되는지)
         Dictionary<string, int> coinAtkVal = CoinAndAtkPointCalc(skill, target);
@@ -472,6 +494,13 @@ public class BattleManager
 
     public void CharaListClean()
 	{
+        Enemy.ForEach(x => {
+            if (!x.IsAlive)
+            {
+                TurnActive -= x.TakeDotDamage;
+                TurnActive -= x.CommonBuffAndDebuffDurationDiscount;
+            }
+        });
         Enemy.RemoveAll(x => !x.IsAlive);
     }
     public void GameOver()

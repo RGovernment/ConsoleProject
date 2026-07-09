@@ -916,7 +916,7 @@ public static class ConsoleUI
         WriteLine();
     }
 
-    public static void WriteLog(IEnumerable<string> logs, int maxLines = 8)
+    public static void WriteLog(IEnumerable<string> logs, int maxLines = LOG_LINE_LIMIT)
     {
         List<string> logLines = logs.TakeLast(maxLines).ToList();
 

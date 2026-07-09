@@ -1,5 +1,6 @@
 using ConsoleGameFramework.Scenes;
 using ConsoleGameFramework.UI;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace ConsoleGameFramework.Core;
@@ -72,11 +73,18 @@ public class GameManager
         }
 
         ConsoleUI.Clear();
+
         ConsoleUI.WriteTitle("프로그램 종료", "수고하셨습니다.");
-        ConsoleUI.WriteBox(new[]
-        {
-            "C# 콘솔 게임 프레임워크가 종료되었습니다."
-        }, "Good Bye", ConsoleColor.DarkCyan);
+        if (Context.IsLose)
+            ConsoleUI.WriteBox(
+            [
+                "전투에서 패배했습니다."
+            ], "The End", ConsoleColor.DarkRed);
+        else
+            ConsoleUI.WriteBox(
+            [
+                "C# 콘솔 게임 프레임워크가 종료되었습니다."
+            ], "Good Bye", ConsoleColor.DarkCyan);
         ConsoleUI.Present();
     }
 

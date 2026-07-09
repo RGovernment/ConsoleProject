@@ -1,6 +1,7 @@
 ﻿using ConsoleGameFramework.Common;
 using ConsoleGameFramework.Core;
 using ConsoleGameFramework.Skills;
+using System.Xml.Linq;
 using static ConsoleGameFramework.Common.Constants;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -70,77 +71,89 @@ public class Character
     public void TakeBuff(string condition, List<string[]> data)
     {
         data.ForEach(x => {
-            if (x[0] == condition && x[1] == ATK_POINT)
-            {
-                Buff? data = BuffList.FirstOrDefault(x => x.Id == ATK_POINT);
-
-                if (data != null)
-                {
-                    //같은 종류의 버프지만 효과가 더 좋은 경우
-                    if(data.Coefficient < Convert.ToInt32(x[2]))
-                    {
-                        // 지속, 효과 갱신
-                        data.Coefficient = Convert.ToInt32(x[2]);
-                        data.Duration = Convert.ToInt32(x[3]);
-                    }
-                    // 같은 종류의 버프이며 효과가 같지만 지속시간이 더 긴 경우
-                    else if(data.Coefficient == Convert.ToInt32(x[2]) && 
-                    data.Duration < Convert.ToInt32(x[3]))
-                        // 지속 시간 갱신
-                        data.Duration = Convert.ToInt32(x[3]);
-                    // 같은 버프를 더 강한 효과로 가지고 있거나
-                    // 효과는 같지만 이미 걸려있는 효과가 지속시간이 더 긴 경우 무시
-                    // 단 연장형 효과는 추가시 예외 처리
-                }
-                else
-                {
-                    BuffList.Add(new Buff("공격력 증가", ATK_POINT,
-                    Convert.ToInt32(x[2]),
-                    "공격력이 증가한다.",
-                    Convert.ToInt32(x[3]))
-                    );
-                }
-            }
+            TakeBuff(condition, x);
         });
+    }
+
+    public void TakeBuff(string condition, string[] data)
+    {
+        if ((data[0] == condition || data[0] == FORCE) && data[1] == ATK_POINT)
+        {
+            Buff? data2 = BuffList.FirstOrDefault(x => x.Id == ATK_POINT);
+
+            if (data2 != null)
+            {
+                //같은 종류의 버프지만 효과가 더 좋은 경우
+                if (data2.Coefficient < Convert.ToInt32(data[2]))
+                {
+                    // 지속, 효과 갱신
+                    data2.Coefficient = Convert.ToInt32(data[2]);
+                    data2.Duration = Convert.ToInt32(data[3]);
+                }
+                // 같은 종류의 버프이며 효과가 같지만 지속시간이 더 긴 경우
+                else if (data2.Coefficient == Convert.ToInt32(data[2]) &&
+                data2.Duration < Convert.ToInt32(data[3]))
+                    // 지속 시간 갱신
+                    data2.Duration = Convert.ToInt32(data[3]);
+                // 같은 버프를 더 강한 효과로 가지고 있거나
+                // 효과는 같지만 이미 걸려있는 효과가 지속시간이 더 긴 경우 무시
+                // 단 연장형 효과는 추가시 예외 처리
+            }
+            else
+            {
+                BuffList.Add(new Buff("공격력 증가", ATK_POINT,
+                Convert.ToInt32(data[2]),
+                "공격력이 증가한다.",
+                Convert.ToInt32(data[3]))
+                );
+            }
+        }
     }
 
     public void TakeDebuff(string condition,List<string[]> data)
     {
-        data.ForEach(x => {
-
-            if (x[0] == condition && x[1] == BURN)
-            {
-                Debuff? data = DebuffList.FirstOrDefault(x => x.Id == BURN);
-                if(data != null)
-                {
-                    //같은 종류의 디버프지만 효과가 더 좋은 경우
-                    if (data.Coefficient < Convert.ToInt32(x[2]))
-                    {
-                        // 지속, 효과 갱신
-                        data.Coefficient = Convert.ToInt32(x[2]);
-                        data.Duration = Convert.ToInt32(x[3]);
-                    }
-                    // 같은 종류의 디버프이며 효과가 같지만 지속시간이 더 긴 경우
-                    else if (data.Coefficient == Convert.ToInt32(x[2]) &&
-                    data.Duration < Convert.ToInt32(x[3]))
-                        // 지속 시간 갱신
-                        data.Duration = Convert.ToInt32(x[3]);
-                    // 같은 디버프를 더 강한 효과로 가지고 있거나
-                    // 효과는 같지만 이미 걸려있는 효과가 지속시간이 더 긴 경우 무시
-                    // 단 연장형 효과는 추가시 예외 처리
-                }
-                else
-                {
-                    DebuffList.Add(
-                                new Debuff("화상", BURN,
-                                Convert.ToInt32(x[2]),
-                                "매 턴이 끝날 때 수치만큼의 피해를 입고 수치가 절반 줄어든다.",
-                                Convert.ToInt32(x[3]))
-                            );
-                }
-            }
-            //else if...
+        data.ForEach(x =>
+        {
+            TakeDebuff(condition, x);
         });
+
+    }
+
+    public void TakeDebuff(string condition, string[] data)
+    {
+
+        if ((data[0] == condition || data[0] == FORCE) && data[1] == BURN)
+        {
+            Debuff? data2 = DebuffList.FirstOrDefault(x => x.Id == BURN);
+            if (data2 != null)
+            {
+                //같은 종류의 디버프지만 효과가 더 좋은 경우
+                if (data2.Coefficient < Convert.ToInt32(data[2]))
+                {
+                    // 지속, 효과 갱신
+                    data2.Coefficient = Convert.ToInt32(data[2]);
+                    data2.Duration = Convert.ToInt32(data[3]);
+                }
+                // 같은 종류의 디버프이며 효과가 같지만 지속시간이 더 긴 경우
+                else if (data2.Coefficient == Convert.ToInt32(data[2]) &&
+                data2.Duration < Convert.ToInt32(data[3]))
+                    // 지속 시간 갱신
+                    data2.Duration = Convert.ToInt32(data[3]);
+                // 같은 디버프를 더 강한 효과로 가지고 있거나
+                // 효과는 같지만 이미 걸려있는 효과가 지속시간이 더 긴 경우 무시
+                // 단 연장형 효과는 추가시 예외 처리
+            }
+            else
+            {
+                DebuffList.Add(
+                            new Debuff("화상", BURN,
+                            Convert.ToInt32(data[2]),
+                            "매 턴이 끝날 때 수치만큼의 피해를 입고 수치가 절반 줄어든다.",
+                            Convert.ToInt32(data[3]))
+                        );
+            }
+        }
+        //else if...
 
     }
 
@@ -175,14 +188,17 @@ public class Character
 
     public void TakeDotDamage()
     {
-        DebuffList.ForEach(x => { 
-            if(x.Id == BURN)
+        for(int i = DebuffList.Count -1; i >= 0; i--)
+        {
+            Debuff x = DebuffList[i];
+            if (x.Id == BURN)
             {
                 TakeDamage(x.Coefficient);
                 GameManager.Instance.Context.AddLog($"{Name}이(가) 화상 피해 {x.Coefficient} 입음");
                 x.Coefficient /= 2;
+                if (x.Coefficient == 0) DebuffList.RemoveAt(i);
             }
-        });
+        }
     }
 
     // 차후 고도화가 가능하면 변수로
@@ -269,5 +285,11 @@ public class Character
     {
         SkillQueue.Clear();
         NextQueue.Clear();
+    }
+
+    public void EffectReset()
+    {
+        BuffList.Clear();
+        DebuffList.Clear();
     }
 }

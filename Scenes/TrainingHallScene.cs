@@ -1,4 +1,5 @@
 ﻿using ConsoleGameFramework.Core;
+using ConsoleGameFramework.Data;
 using ConsoleGameFramework.Skills;
 using ConsoleGameFramework.UI;
 using System;
@@ -228,7 +229,7 @@ namespace ConsoleGameFramework.Scenes
                 int cost = SkillUpgradeCost[choice];
 
                 SkillManager.UpgradeSkill(cost, nowSkillData[choice - 1]);
-                context.AddLog($"{cost}골드를 소모하여 [{nowSkillData[choice - 1].Name}] 스킬 업그레이드");
+                context.AddLog($"{cost * nowSkillData[choice - 1].Grade}골드를 소모하여 [{nowSkillData[choice - 1].Name}] 스킬 업그레이드");
                 return;
             }
 

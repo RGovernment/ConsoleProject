@@ -10,7 +10,7 @@ public static class Constants
     public static int[] Y_DIRECTION = { 0, 0, -1, 1 };
     public const int MIN_SANITY = -45;
     public const int MAX_Sanity = 45;
-    public const int INITIAL_AMOUNT = 600;
+    public const int INITIAL_AMOUNT = 500;
 
     //통상 호출
     public const string HP = "hp";
@@ -34,8 +34,15 @@ public static class Constants
 
     // 조건 Id
     public const string HAVE_BURN = "haveBurn";
+    public const string USE = "use";
+    public const string TURN_START = "turnStart";
+    public const string ALWAYS = "always";
+    public const string TURN_END = "turnEnd";
     public const string IS_BOSS = "isBoss";
+    public const string FIELD = "field";
+    public const string FORCE = "force";
 
     // 버프/디버프 관련 호출
     public const string BURN = "burn";
+    
 }

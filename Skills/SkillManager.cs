@@ -69,9 +69,9 @@ public static class SkillManager// : MonoBehaviour
                 // 화상 부여
                 if (thisGradeEffect == BURN)
                 {
-                    skillData.SkillEffect.Add([GIVEN_HIT, BURN, thisGradeCoefficient]);
+                    skillData.SkillEffect.Add([GIVEN_HIT, BURN, thisGradeCoefficient, "-1"]);
                     skillData.Description += $"/{thisGradeDescription}";
-                }
+                }//else if...
                 break;
             // 피격 관련
             case TAKEN_HIT:

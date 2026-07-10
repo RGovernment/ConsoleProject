@@ -153,20 +153,13 @@ public class BattleManager
     /// </summary>
     /// <param name="first">대결할 스킬 1, 생성해 넣을 것</param>
     /// <param name="second">대결할 스킬 2, 생성해 넣을 것</param>
-    /// <param name="firstSan">대결할 스킬1 보유자의 정신력</param>
-    /// <param name="secondSan">대결할 스킬2 보유자의 정신력</param>
-	/// <param name="firstId">대결할 스킬1 보유자의 ID</param>
-	/// <param name="secondId">대결할 스킬2 보유자의 ID</param>
+    /// <param name="firstChara">대결할 스킬1 보유자의 정신력</param>
+    /// <param name="secondChara">대결할 스킬2 보유자의 정신력</param>
     /// <returns>계산 완료된 스킬</returns>
     public (Character winner, Character loser, Skill skill) SkillClash(
 		Skill first, Skill second, 
 		Character firstChara, Character secondChara)
 	{
-		/// 콘솔 입력 방지ㅡ 나중에 테스트 해보고 안되면 제거
-        /*IntPtr hInput = GetStdHandle(STD_INPUT_HANDLE);
-        GetConsoleMode(hInput, out uint originalMode);
-        SetConsoleMode(hInput, originalMode & ~(ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT));*/
-		///
         StringBuilder sb = new();
         StringBuilder sb2 = new();
         char leftCoin = '◐';
@@ -206,9 +199,6 @@ public class BattleManager
             Console.Write(new string(' ', Console.WindowWidth));
         }
 
-        firstChara.TakeBuff(USE, first.SkillEffect);
-        secondChara.TakeBuff(USE, second.SkillEffect);
-
         //합 전체가 끝날때까지 루프
         while (true)
 		{
@@ -222,8 +212,9 @@ public class BattleManager
 
 			// 루프
 			while (true)
-			{
-				if (count >= first.Coin && count >= second.Coin) break;
+            {
+                //count가 첫번째 스킬 코인보다도 높고, 두번째 스킬 코인 보다도 높을때 종료
+                if (count >= first.Coin && count >= second.Coin) break;
                 // 공격자 방어자 코인 앞/뒤 체크
 				bool firstNowToss = CoinToss(firstChara.Sanity);
 				bool secondNowToss = CoinToss(secondChara.Sanity);
@@ -315,7 +306,7 @@ public class BattleManager
 				"합", ConsoleColor.DarkYellow
 				);
 				ConsoleUI.Present();
-				//count가 첫번째 스킬 코인보다도 높고, 두번째 스킬 코인 보다도 높을때 종료
+				
 
 				Thread.Sleep(100);
 
@@ -340,13 +331,10 @@ public class BattleManager
 
             totalCrashCount++;
         }
-        ///콘솔 입력 방지 해제
-        /*        while (Console.KeyAvailable) Console.ReadKey(intercept: true);
-                SetConsoleMode(hInput, originalMode);*/
-        /// 
+
         int bonus = (totalCrashCount >= 2) ? (totalCrashCount - 1) * 2 : 0;
+
         //결과 반환
-        //ConsoleUI.Present();
         if (first.Coin == 0)
         {
             Character winner = secondChara;

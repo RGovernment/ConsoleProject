@@ -221,6 +221,9 @@ public class BattleScene : SceneBase
         Player playerData = battleManager.Player;
         Enemy enemyData = battleManager.Enemy[choice - 1];
 
+        playerData.TakeBuff(USE, playerSkill.SkillEffect);
+        enemyData.TakeBuff(USE, enemySkill.SkillEffect);
+
         // 합 결과
         (Character winner,Character loser, Skill skill) = battleManager.SkillClash(
                 new(playerSkill),

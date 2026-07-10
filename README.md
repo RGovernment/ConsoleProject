@@ -6,7 +6,7 @@
 dotnet run
 ```
 
-Visual Studio에서는 `ConsoleGameFramework_KR.csproj` 파일을 열고 실행
+Visual Studio에서는 `ConsoleGameFramework.csproj` 파일을 열고 실행
 
 ## 폴더 구조
 

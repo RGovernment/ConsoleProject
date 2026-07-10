@@ -55,11 +55,12 @@ public class Character
         NextQueue = new();
     }
 
-    public void TakeDamage(int damage)
+    public virtual void TakeDamage(int damage)
     {
         Hp = Math.Max(0, Hp - damage);
 
         if (Hp <= 0) OnDead?.Invoke();
+        
     }
 
     public void TakeHeal(int heal)

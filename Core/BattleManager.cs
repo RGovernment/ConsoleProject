@@ -119,6 +119,11 @@ public class BattleManager
             }
         }
 
+        TurnActive -= Player.CommonBuffAndDebuffDurationDiscount;
+        TurnActive -= Player.TakeDotDamage;
+        TurnActive += Player.CommonBuffAndDebuffDurationDiscount;
+        TurnActive += Player.TakeDotDamage;
+
         Enemy.ForEach(x => {
             if (x is Boss bX) TurnEnd += bX.TurnEndPassiveEffect;
             TurnActive += x.CommonBuffAndDebuffDurationDiscount;
@@ -609,6 +614,14 @@ public class BattleManager
 
     public bool PlayCk()
     {
+        if(Enemy.Any(x => x is Boss data && !data.IsAlive))
+        {
+            Boss data = (Boss)Enemy.Find(x => x is Boss);
+            TurnEnd -= data.TurnEndPassiveEffect;
+            //TurnStart -= data.TurnStartPassiveEffect;
+            //Always -= data.AlwaysPassiveEffect;
+        }
+
         return Player.IsAlive && Enemy.Any(x => x.IsAlive);
     }
 

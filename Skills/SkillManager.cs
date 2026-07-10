@@ -8,7 +8,7 @@ using static ConsoleGameFramework.Common.Constants;
 
 namespace ConsoleGameFramework.Skills;
 
-public static class SkillManager// : MonoBehaviour
+public static class SkillManager
 {
     public static bool UpgradeSkill(int cost, Skill skillData)
     {

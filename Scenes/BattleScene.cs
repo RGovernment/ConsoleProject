@@ -1,11 +1,12 @@
 ﻿using ConsoleGameFramework.Core;
 using ConsoleGameFramework.Data;
+using ConsoleGameFramework.Data;
 using ConsoleGameFramework.Models;
 using ConsoleGameFramework.Skills;
 using ConsoleGameFramework.UI;
-using ConsoleGameFramework.Data;
-using static ConsoleGameFramework.Common.Constants;
+using System.Runtime.CompilerServices;
 using System.Text;
+using static ConsoleGameFramework.Common.Constants;
 
 namespace ConsoleGameFramework.Scenes;
 
@@ -48,10 +49,60 @@ public class BattleScene : SceneBase
     public override void Render(GameContext context)
     {
         // 플레이어 로드
+
         Player nowPlayer = battleManager.Player;
-        // 플레이어 사망 로직 이벤트 추가
+
+        //턴  시작시
         battleManager.TurnActive?.Invoke();
-        
+
+        //턴 시작 효과로 인해 사망한 캐릭터 여부 확인
+        bool ck = battleManager.PlayCk();
+        if (!ck)
+        {
+            if (nowPlayer.IsAlive)
+            {
+                if (context.IsBoss)
+                {
+                    context.NowStage++;
+                    // 보스 승리 시
+                    // 승리 멘트 + 게임 종료
+                    Console.WriteLine("게임 오버");
+                    context.Game.RequestQuit();
+                    return;
+                }
+                else
+                {
+                    context.NowRound++;
+                    battleManager = new BattleManager();
+                    // 이번 스테이지에 다음 일반 라운드가 존재하지 않을 경우 보스 라운드로 진입
+                    if (RoundData.StageRoundList[context.NowStage].Count <= context.NowRound)
+                    {
+                        // 보스 데이터 로드
+                        battleManager.NextBattleInit(context.NowStage, nowPlayer,
+                        RoundData.BossRoundList[context.NowStage]);
+                        context.IsBoss = true;
+                    }
+                    // 아닌 경우 일반 라운드로 진입
+                    else
+                    {
+                        // 데이터 로드, 플레이어 정보를 유지하기 위해 Enemy만 로드
+                        battleManager.NextBattleInit(context.NowRound, nowPlayer,
+                        RoundData.StageRoundList[context.NowStage][context.NowRound]);
+
+                    }
+                    battleManager.Player.RoundClear();
+                    return;
+                }
+            }
+            else
+            {
+                context.IsLose = true;
+                ConsoleUI.WriteLine("전투 패배");
+                context.Game.RequestQuit();
+            }
+            return;
+        }
+
         ConsoleUI.Clear();
         if (context.IsBoss)
         {
@@ -128,6 +179,7 @@ public class BattleScene : SceneBase
 
     public async override void HandleInput(GameContext context)
     {
+        if (context.IsLose) return;
         if (chooseSkillNum == 0)
         {
             useAbleSkill.Clear();
@@ -210,6 +262,8 @@ public class BattleScene : SceneBase
             }
         }
 
+        battleManager.TurnEnd?.Invoke(battleManager.Player, battleManager.Enemy);
+
         bool ck = battleManager.PlayCk();
         if (!ck)
         {
@@ -250,12 +304,12 @@ public class BattleScene : SceneBase
             }
             else
             {
+                context.IsLose = true;
                 ConsoleUI.WriteLine("전투 패배");
                 context.Game.RequestQuit();
             }
         }
 
-        battleManager.TurnEnd?.Invoke(battleManager.Player,battleManager.Enemy);
         return;
     }
 }

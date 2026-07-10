@@ -76,7 +76,7 @@ public class RoundData
         {
             [ID] = "20002",
             [NAME] = "잡몹3",
-            [MAX_HP] = 13
+            [MAX_HP] = 12
         }
 
     };
